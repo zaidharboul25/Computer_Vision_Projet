@@ -8,7 +8,6 @@ describe('ProtectedRoute Component', () => {
   it('redirige vers /login si l’utilisateur n’est pas authentifié', () => {
     vi.spyOn(AuthContextModule, 'useAuth').mockReturnValue({
       user: null,
-      token: null,
       isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
@@ -38,7 +37,6 @@ describe('ProtectedRoute Component', () => {
   it('affiche un message 403 d’accès refusé si le rôle est insuffisant', () => {
     vi.spyOn(AuthContextModule, 'useAuth').mockReturnValue({
       user: { username: 'test_operator', role: 'operator' },
-      token: 'valid-token',
       isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
@@ -68,7 +66,6 @@ describe('ProtectedRoute Component', () => {
   it('affiche le contenu protégé si le rôle est autorisé', () => {
     vi.spyOn(AuthContextModule, 'useAuth').mockReturnValue({
       user: { username: 'admin_user', role: 'admin' },
-      token: 'valid-token',
       isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),

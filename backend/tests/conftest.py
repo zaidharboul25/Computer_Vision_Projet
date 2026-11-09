@@ -17,6 +17,11 @@ TEST_DB_NAME = "weaveguard_test"
 async def setup_test_db():
     """Initialise un client MongoDB lié à la boucle d'événements du test en cours."""
     settings.DB_NAME = TEST_DB_NAME
+
+    # Le limiteur IP est global au processus : on le remet à zéro pour que les échecs de connexion
+    # volontaires d'un test n'en bloquent pas un autre.
+    from app.api.v1.auth import login_ip_limiter
+    login_ip_limiter.reset()
     client = AsyncMongoClient(settings.MONGODB_URI, serverSelectionTimeoutMS=3000)
     db = client[TEST_DB_NAME]
 

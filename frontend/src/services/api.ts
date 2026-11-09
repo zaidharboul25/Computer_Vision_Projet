@@ -15,29 +15,29 @@ import type {
   UserUpdateRequest,
 } from '../types'
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:8000' : '')
+// En dev, l'API est jointe sur le MÊME nom d'hôte que la page (localhost ↔ localhost) :
+// le cookie de session est ainsi « same-site » et accepté par le navigateur.
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL ??
+  (import.meta.env.DEV ? `${window.location.protocol}//${window.location.hostname}:8000` : '')
 
-// Token en mémoire (persiste temporairement en sessionStorage pour la durée de session d'onglet)
-const SESSION_STORAGE_KEY = 'weaveguard_session'
-let inMemoryToken: string | null = null
+// Le jeton de session vit dans un cookie httpOnly posé par l'API : JavaScript ne peut pas le lire,
+// donc un XSS ne peut pas le voler. Seul le jeton CSRF (dérivé de la session, inutile seul) reste en mémoire.
+let csrfToken: string | null = null
+const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 
-export function setAuthToken(token: string | null) {
-  inMemoryToken = token
-  if (token) {
-    sessionStorage.setItem(SESSION_STORAGE_KEY, token)
-  } else {
-    sessionStorage.removeItem(SESSION_STORAGE_KEY)
-  }
+export function setCsrfToken(token: string | null) {
+  csrfToken = token
 }
 
-export function getAuthToken(): string | null {
-  if (inMemoryToken) return inMemoryToken
-  const stored = sessionStorage.getItem(SESSION_STORAGE_KEY)
-  if (stored) {
-    inMemoryToken = stored
-    return stored
+export function getCsrfToken(): string | null {
+  return csrfToken
+}
+
+function withSessionHeaders(headers: Headers, method?: string) {
+  if (csrfToken && UNSAFE_METHODS.has((method || 'GET').toUpperCase()) && !headers.has('X-CSRF-Token')) {
+    headers.set('X-CSRF-Token', csrfToken)
   }
-  return null
 }
 
 // Enregistrement d'un callback sur 401 UNAUTHENTICATED
@@ -112,6 +112,10 @@ export const ERROR_MESSAGES_FR: Record<string, { label: string; action?: string 
   SECURITY_ERROR: {
     label: "La requête a été rejetée pour des motifs de sécurité.",
   },
+  TOO_MANY_REQUESTS: {
+    label: "Trop de tentatives de connexion depuis cette adresse.",
+    action: "Patientez quelques minutes avant de réessayer.",
+  },
   REFERENCE_NOT_FOUND: {
     label: "L'image de référence de texture DTD est introuvable.",
   },
@@ -140,12 +144,8 @@ export function formatErrorMessage(err: unknown): { title: string; message: stri
 }
 
 export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const token = getAuthToken()
   const headers = new Headers(options.headers || {})
-
-  if (token && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${token}`)
-  }
+  withSessionHeaders(headers, options.method)
 
   // Ne pas forcer Content-Type si c'est du FormData (multipart/form-data)
   if (!(options.body instanceof FormData) && !headers.has('Content-Type')) {
@@ -155,8 +155,8 @@ export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): 
   const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`
   let res: Response
   try {
-    res = await fetch(url, { ...options, headers })
-  } catch (netErr) {
+    res = await fetch(url, { ...options, headers, credentials: 'include' })
+  } catch {
     throw new ApiError(0, 'NETWORK_ERROR', 'Impossible de joindre le serveur FastAPI.', null)
   }
 
@@ -197,18 +197,14 @@ export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): 
 }
 
 export async function apiFetchBlob(endpoint: string, options: RequestInit = {}): Promise<Blob> {
-  const token = getAuthToken()
   const headers = new Headers(options.headers || {})
-
-  if (token && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${token}`)
-  }
+  withSessionHeaders(headers, options.method)
 
   const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`
   let res: Response
   try {
-    res = await fetch(url, { ...options, headers })
-  } catch (netErr) {
+    res = await fetch(url, { ...options, headers, credentials: 'include' })
+  } catch {
     throw new ApiError(0, 'NETWORK_ERROR', 'Impossible de joindre le serveur FastAPI.', null)
   }
 
@@ -234,6 +230,10 @@ export async function apiFetchBlob(endpoint: string, options: RequestInit = {}):
   }
 
   return await res.blob()
+}
+
+export async function logoutRequest(): Promise<void> {
+  await apiFetch('/api/v1/auth/logout', { method: 'POST' })
 }
 
 export async function createInspection(

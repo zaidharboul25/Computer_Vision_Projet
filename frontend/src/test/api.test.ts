@@ -1,28 +1,51 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import {
   ApiError,
   formatErrorMessage,
-  setAuthToken,
-  getAuthToken,
+  setCsrfToken,
+  getCsrfToken,
+  apiFetch,
   onUnauthenticated,
   ERROR_MESSAGES_FR,
 } from '../services/api'
 
 describe('API Service & Error Handling', () => {
   beforeEach(() => {
-    setAuthToken(null)
+    setCsrfToken(null)
     sessionStorage.clear()
+    localStorage.clear()
   })
 
-  it('gère le stockage du jeton JWT en mémoire et sessionStorage', () => {
-    expect(getAuthToken()).toBeNull()
-    setAuthToken('test-jwt-token-xyz')
-    expect(getAuthToken()).toBe('test-jwt-token-xyz')
-    expect(sessionStorage.getItem('weaveguard_session')).toBe('test-jwt-token-xyz')
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
 
-    setAuthToken(null)
-    expect(getAuthToken()).toBeNull()
-    expect(sessionStorage.getItem('weaveguard_session')).toBeNull()
+  it('conserve le jeton CSRF en mémoire uniquement (jamais dans le stockage du navigateur)', () => {
+    expect(getCsrfToken()).toBeNull()
+    setCsrfToken('csrf-abc')
+    expect(getCsrfToken()).toBe('csrf-abc')
+    expect(sessionStorage.length).toBe(0)
+    expect(localStorage.length).toBe(0)
+  })
+
+  it('envoie les cookies (credentials: include) et X-CSRF-Token uniquement sur les requêtes modifiantes', async () => {
+    const fetchMock = vi.fn().mockImplementation(async () =>
+      new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    )
+    vi.stubGlobal('fetch', fetchMock)
+    setCsrfToken('csrf-abc')
+
+    await apiFetch('/api/v1/auth/me')
+    await apiFetch('/api/v1/inspections', { method: 'POST', body: JSON.stringify({}) })
+
+    const [, getInit] = fetchMock.mock.calls[0]
+    const [, postInit] = fetchMock.mock.calls[1]
+    expect(getInit.credentials).toBe('include')
+    expect(new Headers(getInit.headers).has('X-CSRF-Token')).toBe(false)
+    expect(new Headers(getInit.headers).has('Authorization')).toBe(false)
+    expect(postInit.credentials).toBe('include')
+    expect(new Headers(postInit.headers).get('X-CSRF-Token')).toBe('csrf-abc')
+    vi.unstubAllGlobals()
   })
 
   it('formate correctement une ApiError avec code connu et correlation_id', () => {

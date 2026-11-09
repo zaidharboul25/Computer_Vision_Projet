@@ -42,13 +42,15 @@ export const LoginPage: React.FC = () => {
       const res = await apiFetch<{
         access_token: string
         token_type: string
+        csrf_token: string
         user: { username: string; role: UserRole }
       }>('/api/v1/auth/login', {
         method: 'POST',
         body: JSON.stringify({ username: username.trim(), password }),
       })
 
-      login(res.access_token, res.user)
+      // Le cookie httpOnly est déjà posé par l'API ; on ne garde ni ne stocke le jeton Bearer.
+      login(res.user, res.csrf_token)
       navigate(from, { replace: true })
     } catch (err) {
       setError(err)

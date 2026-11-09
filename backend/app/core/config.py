@@ -4,7 +4,7 @@ Utilise pydantic-settings pour charger et valider les variables d'environnement.
 """
 from pathlib import Path
 from typing import List, Literal, Optional, Union
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -22,6 +22,15 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     MAX_LOGIN_ATTEMPTS: int = 5
     LOCKOUT_MINUTES: int = 15
+    # Limitation par adresse IP (en plus du verrouillage par compte) : protège aussi contre
+    # l'énumération d'identifiants inconnus et le « password spraying » sur plusieurs comptes.
+    LOGIN_IP_MAX_ATTEMPTS: int = 20
+    LOGIN_IP_WINDOW_SECONDS: int = 300
+
+    # Session par cookie httpOnly (le jeton n'est plus lisible par JavaScript → résiste au vol par XSS)
+    COOKIE_NAME: str = "wg_token"
+    COOKIE_SECURE: Optional[bool] = Field(None, description="None => activé automatiquement si ENV=prod")
+    COOKIE_SAMESITE: Literal["lax", "strict", "none"] = "lax"
 
     # Chemins
     MODELS_DIR: Path = Path("models")
@@ -70,6 +79,23 @@ class Settings(BaseSettings):
         if isinstance(value, str):
             return [item.strip() for item in value.split(",") if item.strip()]
         return value
+
+    @model_validator(mode="after")
+    def forbid_wildcard_cors_with_credentials(self):
+        origins = self.CORS_ORIGINS if isinstance(self.CORS_ORIGINS, list) else [self.CORS_ORIGINS]
+        if "*" in origins:
+            raise ValueError(
+                "CORS_ORIGINS ne peut pas contenir '*' : l'API utilise des cookies d'authentification "
+                "(allow_credentials=True). Listez explicitement les origines autorisées."
+            )
+        return self
+
+    @property
+    def cookie_secure(self) -> bool:
+        """Drapeau Secure du cookie de session : explicite, sinon actif en production."""
+        if self.COOKIE_SECURE is not None:
+            return self.COOKIE_SECURE
+        return self.ENV == "prod"
 
     def resolve_path(self, path: Path) -> Path:
         """Résout un chemin relativement à la racine du projet s'il n'est pas absolu."""

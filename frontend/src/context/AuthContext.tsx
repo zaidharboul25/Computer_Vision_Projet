@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import type { UserRole } from '../types'
-import { apiFetch, setAuthToken, getAuthToken, onUnauthenticated } from '../services/api'
+import { apiFetch, logoutRequest, setCsrfToken, onUnauthenticated } from '../services/api'
 
 interface AuthUser {
   username: string
@@ -9,70 +9,55 @@ interface AuthUser {
 
 interface AuthContextType {
   user: AuthUser | null
-  token: string | null
   isLoading: boolean
-  login: (token: string, user: AuthUser) => void
+  login: (user: AuthUser, csrfToken: string) => void
   logout: () => void
   hasRole: (roles: UserRole | UserRole[]) => boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const USER_STORAGE_KEY = 'weaveguard_user'
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>(() => {
-    const saved = sessionStorage.getItem(USER_STORAGE_KEY)
-    if (saved) {
-      try {
-        return JSON.parse(saved)
-      } catch {
-        return null
-      }
-    }
-    return null
-  })
-  const [token, setTokenState] = useState<string | null>(getAuthToken())
+  const [user, setUser] = useState<AuthUser | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const logout = useCallback(() => {
-    setAuthToken(null)
-    setTokenState(null)
+  const clearSession = useCallback(() => {
+    setCsrfToken(null)
     setUser(null)
-    sessionStorage.removeItem(USER_STORAGE_KEY)
   }, [])
 
-  const login = useCallback((newToken: string, newUser: AuthUser) => {
-    setAuthToken(newToken)
-    setTokenState(newToken)
+  const logout = useCallback(() => {
+    // Le cookie httpOnly ne peut être supprimé que par l'API.
+    logoutRequest().catch(() => undefined)
+    clearSession()
+  }, [clearSession])
+
+  const login = useCallback((newUser: AuthUser, csrfToken: string) => {
+    setCsrfToken(csrfToken)
     setUser(newUser)
-    sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(newUser))
   }, [])
 
-  // Rafraîchir les infos de session via /api/v1/auth/me au chargement
+  // Restauration de session : le cookie httpOnly est envoyé automatiquement à /auth/me.
   useEffect(() => {
-    onUnauthenticated(() => {
-      logout()
-    })
+    onUnauthenticated(clearSession)
 
-    const initialToken = getAuthToken()
-    if (!initialToken) {
-      setIsLoading(false)
-      return
-    }
-
-    apiFetch<{ username: string; role: UserRole }>('/api/v1/auth/me')
+    let cancelled = false
+    apiFetch<{ username: string; role: UserRole; csrf_token: string }>('/api/v1/auth/me')
       .then((me) => {
+        if (cancelled) return
+        setCsrfToken(me.csrf_token)
         setUser({ username: me.username, role: me.role })
-        sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify({ username: me.username, role: me.role }))
       })
       .catch(() => {
-        logout()
+        if (!cancelled) clearSession()
       })
       .finally(() => {
-        setIsLoading(false)
+        if (!cancelled) setIsLoading(false)
       })
-  }, [logout])
+    return () => {
+      cancelled = true
+    }
+  }, [clearSession])
 
   const hasRole = useCallback(
     (roles: UserRole | UserRole[]) => {
@@ -83,11 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [user]
   )
 
-  return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, logout, hasRole }}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={{ user, isLoading, login, logout, hasRole }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth(): AuthContextType {
@@ -97,4 +78,3 @@ export function useAuth(): AuthContextType {
   }
   return ctx
 }
-

@@ -17,7 +17,6 @@ function renderWithProviders(
 ) {
   vi.spyOn(AuthContextModule, 'useAuth').mockReturnValue({
     user,
-    token: user ? 'mock-token' : null,
     isLoading: false,
     login: vi.fn(),
     logout: vi.fn(),

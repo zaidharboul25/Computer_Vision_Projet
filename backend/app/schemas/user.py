@@ -18,10 +18,15 @@ class UserResponse(BaseModel):
     last_login: Optional[str] = None
 
 
+class MeResponse(UserResponse):
+    csrf_token: str = Field(..., description="Jeton CSRF à renvoyer dans X-CSRF-Token (requêtes modifiantes par cookie)")
+
+
 class UserLoginResponse(BaseModel):
-    access_token: str
+    access_token: str = Field(..., description="Jeton Bearer pour les clients API (l'interface web utilise le cookie httpOnly)")
     token_type: str = "bearer"
     user: UserResponse
+    csrf_token: Optional[str] = Field(None, description="Jeton CSRF associé à la session par cookie")
 
 
 class UserCreateRequest(BaseModel):

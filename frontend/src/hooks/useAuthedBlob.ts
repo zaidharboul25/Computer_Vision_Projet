@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { getAuthToken, API_BASE_URL, ApiError } from '../services/api'
+import { API_BASE_URL, ApiError } from '../services/api'
 
 // Cache partagé en mémoire : url -> { objectUrl: string; refCount: number; blob: Blob }
 const blobCache = new Map<string, { objectUrl: string; refCount: number; blob: Blob }>()
@@ -55,13 +55,8 @@ export function useAuthedBlob(endpoint: string | null | undefined): {
     setLoading(true)
     setError(null)
 
-    const token = getAuthToken()
-    const headers: HeadersInit = {}
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
-
-    fetch(fullUrl, { headers, signal: controller.signal })
+    // Authentification par cookie httpOnly (jamais de jeton dans l'URL ni lisible par JS)
+    fetch(fullUrl, { credentials: 'include', signal: controller.signal })
       .then(async (res) => {
         if (!res.ok) {
           let errorMsg = `Erreur ${res.status}: ${res.statusText}`

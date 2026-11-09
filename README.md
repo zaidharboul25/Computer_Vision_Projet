@@ -19,7 +19,26 @@ Le backend est développé sous **FastAPI** et s'appuie sur une base de données
 
 ---
 
-## Démarrer pour une Démonstration
+## Démarrage rapide (Docker — recommandé, toutes plateformes)
+
+```bash
+cp .env.docker.example .env.docker
+python backend/scripts/generate_secret.py        # copier la valeur dans JWT_SECRET (.env.docker)
+docker compose up --build -d                     # MongoDB + API sur http://127.0.0.1:8000
+docker compose exec app python backend/scripts/seed_demo.py --db weaveguard --count 12
+cd frontend && npm install && npm run dev        # interface sur http://localhost:5173
+```
+
+Les mots de passe des comptes `demo_*` sont générés aléatoirement et affichés par le script de peuplement.
+Ouvrez l'interface avec le **même nom d'hôte** que l'API (`localhost` des deux côtés) : l'authentification repose sur un cookie `httpOnly`.
+
+Qualité : `npm run lint`, `npx tsc -b`, `npm test` (frontend), `npm run test:e2e` (Playwright), `pytest backend/tests` (backend).
+L'intégration continue (`.github/workflows/ci.yml`) exécute l'ensemble. Voir aussi `docs/LFS_MIGRATION.md` pour alléger le dépôt.
+
+---
+
+## Démarrer pour une Démonstration (Windows, sans Docker)
+
 
 ### 1. Prérequis
 - Système d'exploitation : Windows 10/11 (x64)

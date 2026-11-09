@@ -9,10 +9,29 @@ Rôles contractuels :
 """
 from enum import Enum
 from typing import Callable, List, Optional
-from fastapi import Depends, Header
+import hashlib
+import hmac
+from fastapi import Depends, Header, Request
 import jwt
+from app.core.config import settings
 from app.core.errors import ForbiddenException, UnauthenticatedException
 from app.core.security import decode_access_token
+
+SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
+
+
+def compute_csrf_token(session_token: str) -> str:
+    """Jeton CSRF déterministe lié à la session (HMAC du JWT).
+
+    Sans état côté serveur : il est renvoyé au client par /auth/login et /auth/me (réponses que
+    une page tierce ne peut pas lire grâce à CORS) puis renvoyé dans l'en-tête X-CSRF-Token
+    pour toute requête modifiante authentifiée par cookie.
+    """
+    return hmac.new(
+        settings.JWT_SECRET.encode("utf-8"),
+        f"csrf:{session_token}".encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
 
 
 class UserRole(str, Enum):
@@ -49,7 +68,27 @@ def extract_token_from_header(authorization: Optional[str] = Header(None)) -> st
     return parts[1]
 
 
-async def get_current_user(token: str = Depends(extract_token_from_header)) -> AuthenticatedUser:
+async def resolve_token(request: Request, authorization: Optional[str] = Header(None)) -> str:
+    """Extrait le jeton de session : en-tête Bearer (clients API) ou cookie httpOnly (interface web).
+
+    Une requête modifiante authentifiée par cookie doit présenter un jeton CSRF valide ;
+    l'authentification Bearer n'y est pas soumise (un navigateur ne l'ajoute jamais automatiquement).
+    """
+    if authorization:
+        return extract_token_from_header(authorization)
+
+    cookie_token = request.cookies.get(settings.COOKIE_NAME)
+    if not cookie_token:
+        raise UnauthenticatedException(message="En-tête Authorization manquant")
+
+    if request.method not in SAFE_METHODS:
+        provided = request.headers.get("x-csrf-token", "")
+        if not hmac.compare_digest(provided, compute_csrf_token(cookie_token)):
+            raise ForbiddenException(message="Jeton CSRF manquant ou invalide")
+    return cookie_token
+
+
+async def get_current_user(token: str = Depends(resolve_token)) -> AuthenticatedUser:
     try:
         payload = decode_access_token(token)
     except jwt.ExpiredSignatureError:
