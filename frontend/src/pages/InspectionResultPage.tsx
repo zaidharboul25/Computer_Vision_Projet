@@ -5,6 +5,7 @@ import { getInspection, getInspectionRegions, apiFetchBlob, triggerBlobDownload 
 import { useAuthedBlob } from '../hooks/useAuthedBlob'
 import { ErrorAlert } from '../components/common/ErrorAlert'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
+import { InspectionResultSkeleton, ImageSkeleton, Skeleton } from '../components/ui/Skeleton'
 import { DemoBadge } from '../components/common/DemoBadge'
 import type { EngineProgress } from '../types'
 
@@ -81,12 +82,7 @@ export const InspectionResultPage: React.FC = () => {
   }
 
   if (inspectionLoading) {
-    return (
-      <div className="flex min-h-[300px] flex-col items-center justify-center gap-3">
-        <LoadingSpinner size="lg" />
-        <p className="text-sm text-slate-500 dark:text-slate-400">Chargement de l'inspection...</p>
-      </div>
-    )
+    return <InspectionResultSkeleton />
   }
 
   if (inspectionError || !inspection) {
@@ -95,7 +91,7 @@ export const InspectionResultPage: React.FC = () => {
         <ErrorAlert error={inspectionError || new Error("Impossible de charger l'inspection demandée.")} />
         <Link
           to="/"
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:border-slate-700"
+          className="btn-secondary !py-2 disabled:opacity-40"
         >
           Retour au tableau de bord
         </Link>
@@ -127,7 +123,7 @@ export const InspectionResultPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="stagger space-y-6">
       {/* En-tête de l'inspection */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -151,7 +147,7 @@ export const InspectionResultPage: React.FC = () => {
                 type="button"
                 onClick={handleDownloadExport}
                 disabled={downloadingExport}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                className="btn-secondary !px-3 !py-1.5 !text-xs !rounded-lg disabled:opacity-40"
               >
                 {downloadingExport ? <LoadingSpinner size="sm" /> : (
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -164,7 +160,7 @@ export const InspectionResultPage: React.FC = () => {
                 type="button"
                 onClick={handleDownloadOverlay}
                 disabled={downloadingOverlay}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                className="btn-secondary !px-3 !py-1.5 !text-xs !rounded-lg disabled:opacity-40"
               >
                 {downloadingOverlay ? <LoadingSpinner size="sm" /> : (
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -177,7 +173,7 @@ export const InspectionResultPage: React.FC = () => {
           )}
           <Link
             to="/inspections/new"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-700"
+            className="btn-primary !px-3 !py-1.5 !text-xs !rounded-lg"
           >
             Nouvelle analyse
           </Link>
@@ -274,7 +270,7 @@ export const InspectionResultPage: React.FC = () => {
       {/* Progression et statut des moteurs (aria-live) */}
       <div
         aria-live="polite"
-        className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+        className="card p-5"
       >
         <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
           Progression et télémétrie des moteurs
@@ -357,7 +353,13 @@ export const InspectionResultPage: React.FC = () => {
       {isPendingOrRunning && (
         <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-8 text-center dark:border-blue-950 dark:bg-blue-950/20">
           <div className="flex flex-col items-center gap-3">
-            <LoadingSpinner size="lg" />
+            <div className="relative h-20 w-20" aria-hidden="true">
+              <span className="absolute inset-0 animate-pulse-ring rounded-full bg-brand-500/40" />
+              <span className="absolute inset-0 animate-pulse-ring rounded-full bg-brand-500/30 [animation-delay:-1s]" />
+              <div className="relative flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-violet-600 text-white shadow-lg shadow-brand-600/30">
+                <LoadingSpinner size="md" className="!p-0 text-white" label="Analyse" />
+              </div>
+            </div>
             <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">
               Analyse automatique en cours
             </h3>
@@ -372,7 +374,7 @@ export const InspectionResultPage: React.FC = () => {
       {isDone && inspection.regions_count === 0 && (
         <div
           data-testid="no-regions-card"
-          className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900"
+          className="card p-8 text-center "
         >
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
             <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -389,7 +391,7 @@ export const InspectionResultPage: React.FC = () => {
           <div className="mt-6 flex justify-center gap-3">
             <Link
               to="/inspections/new"
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-700"
+              className="btn-primary !py-2"
             >
               Lancer une autre analyse
             </Link>
@@ -402,22 +404,22 @@ export const InspectionResultPage: React.FC = () => {
         <div className="space-y-6">
           {/* Métriques de synthèse */}
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="card p-4">
               <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Régions détectées</p>
               <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">{inspection.regions_count}</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="card p-4">
               <p className="text-xs font-medium uppercase tracking-wider text-slate-400">YOLOv11 (Supervisé)</p>
               <p className="mt-1 text-2xl font-bold text-indigo-600 dark:text-indigo-400">{yoloCount}</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="card p-4">
               <p className="text-xs font-medium uppercase tracking-wider text-slate-400">PatchCore (Anomalies)</p>
               <p className="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400">{patchcoreCount}</p>
             </div>
           </div>
 
           {/* Sélecteur de couche visuelle */}
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="card p-5">
             <div className="flex flex-wrap items-center justify-between border-b border-slate-200 pb-4 dark:border-slate-800">
               <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 Visualisation des couches
@@ -464,7 +466,7 @@ export const InspectionResultPage: React.FC = () => {
             {/* Zone d'affichage de l'image sécurisée */}
             <div className="mt-4 flex min-h-[350px] items-center justify-center rounded-lg bg-slate-100 p-2 dark:bg-slate-950">
               {activeTab === 'overlay' && (
-                overlayBlob.loading ? <LoadingSpinner size="lg" /> :
+                overlayBlob.loading ? <ImageSkeleton className="min-h-[350px]" /> :
                 overlayBlob.error ? <p className="text-xs text-rose-500">Erreur lors du chargement de l'overlay.</p> :
                 overlayBlob.objectUrl ? (
                   <img
@@ -476,7 +478,7 @@ export const InspectionResultPage: React.FC = () => {
               )}
 
               {activeTab === 'image' && (
-                imageBlob.loading ? <LoadingSpinner size="lg" /> :
+                imageBlob.loading ? <ImageSkeleton className="min-h-[350px]" /> :
                 imageBlob.error ? <p className="text-xs text-rose-500">Erreur lors du chargement de l'image.</p> :
                 imageBlob.objectUrl ? (
                   <img
@@ -488,7 +490,7 @@ export const InspectionResultPage: React.FC = () => {
               )}
 
               {activeTab === 'heatmap' && (
-                heatmapBlob.loading ? <LoadingSpinner size="lg" /> :
+                heatmapBlob.loading ? <ImageSkeleton className="min-h-[350px]" /> :
                 heatmapBlob.error ? <p className="text-xs text-rose-500">Erreur lors du chargement de la heatmap.</p> :
                 heatmapBlob.objectUrl ? (
                   <div className="flex flex-col items-center gap-3">
@@ -509,14 +511,23 @@ export const InspectionResultPage: React.FC = () => {
           </div>
 
           {/* Liste détaillée des régions candidates */}
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="card p-5">
             <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">
               Détail des régions candidates détectées
             </h2>
 
             {regionsLoading ? (
-              <div className="flex justify-center p-6">
-                <LoadingSpinner size="md" />
+              <div className="space-y-3" role="status" aria-busy="true">
+                <span className="sr-only">Chargement des régions</span>
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="flex items-center justify-between gap-4 py-2">
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-1/3" />
+                      <Skeleton className="h-3 w-2/3" />
+                    </div>
+                    <Skeleton className="h-8 w-24 rounded-lg" />
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="divide-y divide-slate-200 dark:divide-slate-800">

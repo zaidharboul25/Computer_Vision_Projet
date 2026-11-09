@@ -1,13 +1,79 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <meta name="description" content="WeaveGuard AI — plateforme d'inspection textile industrielle par vision par ordinateur" />
+    <meta name="theme-color" content="#4f46e5" />
+    <title>WeaveGuard AI — Inspection textile</title>
+    <script>
+      // Applique le thème avant le premier rendu pour éviter tout flash blanc
+      try {
+        var t = localStorage.getItem('weaveguard_theme');
+        var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (dark) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    </script>
+    <style>
+      /* ===== Écran de démarrage (squelette de l'application) — visible avant le chargement du JS ===== */
+      html, body { margin: 0; }
+      body { background: #f8fafc; }
+      html.dark body { background: #05070f; }
+      .boot { display: flex; flex-direction: column; min-height: 100vh; font-family: system-ui, sans-serif; }
+      .boot-header { height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+        border-bottom: 1px solid #e2e8f0; background: #fff; }
+      html.dark .boot-header { background: #0a0e1a; border-color: rgba(255,255,255,.07); }
+      .boot-body { flex: 1; display: flex; }
+      .boot-side { width: 264px; padding: 16px; border-right: 1px solid #e2e8f0; background: #fff; display: flex; flex-direction: column; gap: 10px; }
+      html.dark .boot-side { background: #0a0e1a; border-color: rgba(255,255,255,.07); }
+      .boot-main { flex: 1; padding: 32px; display: flex; flex-direction: column; gap: 20px; }
+      .bk { position: relative; overflow: hidden; background: #e2e8f0; border-radius: 10px; }
+      html.dark .bk { background: rgba(255,255,255,.07); }
+      .bk::after { content: ''; position: absolute; inset: 0; transform: translateX(-100%);
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.65), transparent); animation: bk-shimmer 1.6s infinite; }
+      html.dark .bk::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent); }
+      @keyframes bk-shimmer { 100% { transform: translateX(100%); } }
+      .bk-logo { background: linear-gradient(135deg, #6366f1, #4338ca); width: 36px; height: 36px; border-radius: 10px; }
+      .bk-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+      .bk-card { height: 120px; border-radius: 16px; }
+      @media (max-width: 1023px) { .boot-side { display: none; } .bk-grid { grid-template-columns: repeat(2, 1fr); } .boot-main { padding: 16px; } }
+      @media (prefers-reduced-motion: reduce) { .bk::after { display: none; } }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot" aria-busy="true" aria-label="Chargement de WeaveGuard AI">
+        <div class="boot-header">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="bk bk-logo"></div>
+            <div class="bk" style="width:150px;height:18px"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="bk" style="width:120px;height:28px;border-radius:999px"></div>
+            <div class="bk" style="width:36px;height:36px"></div>
+            <div class="bk" style="width:110px;height:36px"></div>
+          </div>
+        </div>
+        <div class="boot-body">
+          <div class="boot-side">
+            <div class="bk" style="height:42px"></div>
+            <div class="bk" style="height:42px;opacity:.85"></div>
+            <div class="bk" style="height:42px;opacity:.7"></div>
+            <div class="bk" style="height:42px;opacity:.55"></div>
+            <div class="bk" style="height:42px;opacity:.4"></div>
+          </div>
+          <div class="boot-main">
+            <div class="bk" style="width:320px;max-width:70%;height:30px"></div>
+            <div class="bk" style="width:220px;max-width:50%;height:14px"></div>
+            <div class="bk-grid">
+              <div class="bk bk-card"></div><div class="bk bk-card"></div><div class="bk bk-card"></div><div class="bk bk-card"></div>
+            </div>
+            <div class="bk" style="height:260px;border-radius:16px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -155,7 +155,7 @@ export const SimilaritySearchPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="stagger space-y-6">
       {/* En-tête */}
       <div>
         <div className="flex items-center gap-2">
@@ -224,7 +224,7 @@ export const SimilaritySearchPage: React.FC = () => {
           </div>
 
           {/* Options de recherche */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-4">
+          <div className="card p-5 space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Paramètres de l'index
             </h3>
@@ -238,7 +238,7 @@ export const SimilaritySearchPage: React.FC = () => {
                 id="target-index"
                 value={indexName}
                 onChange={(e) => setIndexName(e.target.value as 'weaveguard' | 'dtd' | 'all')}
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="input !py-2"
               >
                 <option value="all">Tous les index (WeaveGuard + DTD)</option>
                 <option value="weaveguard">Index WeaveGuard (Textiles d'apprentissage)</option>
@@ -277,7 +277,7 @@ export const SimilaritySearchPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={!file || loading}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="btn-primary w-full"
               >
                 {loading ? (
                   <>

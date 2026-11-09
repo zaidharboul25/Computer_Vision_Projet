@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import { listInspections } from '../services/api'
 import type { Inspection } from '../types'
-import { LoadingSpinner } from '../components/common/LoadingSpinner'
+import { SkeletonRegion, TableSkeleton } from '../components/ui/Skeleton'
 import { ErrorAlert } from '../components/common/ErrorAlert'
 import { useAuth } from '../context/AuthContext'
 
@@ -130,7 +130,7 @@ export const InspectionsListPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="stagger space-y-6">
       {/* En-tête */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
@@ -148,7 +148,7 @@ export const InspectionsListPage: React.FC = () => {
         {hasRole(['operator', 'supervisor', 'admin']) && (
           <Link
             to="/inspections/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="btn-primary !py-2"
           >
             <PlusCircle className="h-4 w-4" />
             Nouvelle inspection
@@ -157,7 +157,7 @@ export const InspectionsListPage: React.FC = () => {
       </div>
 
       {/* Barre de filtres */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="card p-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {/* Recherche ID */}
           <div>
@@ -174,7 +174,7 @@ export const InspectionsListPage: React.FC = () => {
                   setIdFilter(e.target.value)
                   setPage(0)
                 }}
-                className="w-full rounded-lg border border-slate-300 bg-white py-1.5 pl-8 pr-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="input !py-2 !pl-9"
               />
               <Search className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
             </div>
@@ -195,7 +195,7 @@ export const InspectionsListPage: React.FC = () => {
                   setCreatedByFilter(e.target.value)
                   setPage(0)
                 }}
-                className="w-full rounded-lg border border-slate-300 bg-white py-1.5 pl-8 pr-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="input !py-2 !pl-9"
               />
               <Search className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
             </div>
@@ -214,7 +214,7 @@ export const InspectionsListPage: React.FC = () => {
                   setStatusFilter(e.target.value)
                   setPage(0)
                 }}
-                className="w-full rounded-lg border border-slate-300 bg-white py-1.5 pl-3 pr-8 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="input !py-2 !pr-9"
               >
                 <option value="">Tous les statuts</option>
                 <option value="done">Terminée (done)</option>
@@ -238,7 +238,7 @@ export const InspectionsListPage: React.FC = () => {
                   setReviewFilter(e.target.value)
                   setPage(0)
                 }}
-                className="w-full rounded-lg border border-slate-300 bg-white py-1.5 pl-3 pr-8 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="input !py-2 !pr-9"
               >
                 <option value="">Toutes les revues</option>
                 <option value="unreviewed">À réviser</option>
@@ -252,7 +252,7 @@ export const InspectionsListPage: React.FC = () => {
             <button
               type="button"
               onClick={handleResetFilters}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+              className="btn-secondary w-full !py-1.5 disabled:opacity-40"
             >
               <RotateCcw className="h-4 w-4" />
               Réinitialiser
@@ -265,11 +265,11 @@ export const InspectionsListPage: React.FC = () => {
       {error ? <ErrorAlert error={error} /> : null}
 
       {/* Tableau des inspections */}
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
+      <div className="card overflow-hidden">
         {loading ? (
-          <div className="py-16">
-            <LoadingSpinner label="Chargement de l'historique des inspections..." />
-          </div>
+          <SkeletonRegion label="Chargement de l'historique des inspections...">
+            <TableSkeleton rows={8} cols={6} />
+          </SkeletonRegion>
         ) : inspections.length === 0 ? (
           <div className="py-16 text-center">
             <Filter className="mx-auto h-10 w-10 text-slate-400" />
@@ -293,7 +293,7 @@ export const InspectionsListPage: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
-              <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-400">
+              <thead className="table-head">
                 <tr>
                   <th scope="col" className="px-5 py-3.5 font-semibold">Identifiant</th>
                   <th scope="col" className="px-5 py-3.5 font-semibold">Date de soumission</th>
@@ -311,7 +311,7 @@ export const InspectionsListPage: React.FC = () => {
                   return (
                     <tr
                       key={insp.id}
-                      className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-800/40"
+                      className="table-row"
                     >
                       {/* ID */}
                       <td className="px-5 py-3.5">
@@ -384,7 +384,7 @@ export const InspectionsListPage: React.FC = () => {
                       <td className="px-5 py-3.5 text-right">
                         <Link
                           to={`/inspections/${insp.id}`}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                          className="btn-secondary !px-3 !py-1.5 !text-xs !rounded-lg disabled:opacity-40"
                         >
                           Consulter
                           <ExternalLink className="h-3 w-3" />
@@ -420,7 +420,7 @@ export const InspectionsListPage: React.FC = () => {
                 type="button"
                 onClick={() => setPage((p) => Math.max(p - 1, 0))}
                 disabled={page === 0}
-                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                className="btn-secondary !px-3 !py-1.5 !text-xs !rounded-lg disabled:opacity-40"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Précédent
@@ -434,7 +434,7 @@ export const InspectionsListPage: React.FC = () => {
                 type="button"
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
                 disabled={page >= totalPages - 1}
-                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                className="btn-secondary !px-3 !py-1.5 !text-xs !rounded-lg disabled:opacity-40"
               >
                 Suivant
                 <ChevronRight className="h-4 w-4" />

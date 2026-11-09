@@ -99,7 +99,7 @@ export const NewInspectionPage: React.FC = () => {
   const patchcoreAvailable = health?.engines?.patchcore !== undefined ? Boolean(health.engines.patchcore) : true
 
   return (
-    <div className="space-y-6">
+    <div className="stagger space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
           Nouvelle inspection textile
@@ -113,7 +113,7 @@ export const NewInspectionPage: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Zone de glisser-déposer / sélection de fichier */}
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="card p-6">
           <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
             1. Image textile à contrôler
           </label>
@@ -179,7 +179,7 @@ export const NewInspectionPage: React.FC = () => {
         </div>
 
         {/* Sélection des moteurs d'inférence */}
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="card p-6">
           <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
             2. Moteurs d'analyse activés
           </label>
@@ -254,7 +254,7 @@ export const NewInspectionPage: React.FC = () => {
         </div>
 
         {/* 3. Mode d'échelle pour l'inférence */}
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="card p-6">
           <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
             3. Mode d'échelle de l'image
           </label>
@@ -326,14 +326,14 @@ export const NewInspectionPage: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="btn-secondary !py-2 disabled:opacity-40"
           >
             Annuler
           </button>
           <button
             type="submit"
             disabled={isSubmitting || !selectedFile || (!useYolo && !usePatchCore)}
-            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="btn-primary !py-2"
           >
             {isSubmitting ? (
               <>

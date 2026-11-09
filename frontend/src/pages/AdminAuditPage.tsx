@@ -17,6 +17,7 @@ import {
 import { listAuditLogs, listUsers, createUser, updateUser } from '../services/api'
 import type { AuditLogItem, UserResponse, UserRole } from '../types'
 import { LoadingSpinner } from '../components/common/LoadingSpinner'
+import { SkeletonRegion, TableSkeleton } from '../components/ui/Skeleton'
 import { ErrorAlert } from '../components/common/ErrorAlert'
 import { RoleBadge } from '../components/common/RoleBadge'
 import { useAuth } from '../context/AuthContext'
@@ -124,7 +125,7 @@ export const AdminAuditPage: React.FC = () => {
   const auditTotalPages = Math.ceil(auditTotal / PAGE_SIZE)
 
   return (
-    <div className="space-y-6">
+    <div className="stagger space-y-6">
       {/* En-tête */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
@@ -143,7 +144,7 @@ export const AdminAuditPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="btn-primary !py-2"
           >
             <PlusCircle className="h-4 w-4" />
             Créer un utilisateur
@@ -199,7 +200,7 @@ export const AdminAuditPage: React.FC = () => {
       {activeTab === 'audit' && (
         <div className="space-y-4">
           {/* Barre de filtres audit */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="card p-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
                 <label htmlFor="audit-user" className="block text-xs font-medium text-slate-700 dark:text-slate-300">
@@ -215,7 +216,7 @@ export const AdminAuditPage: React.FC = () => {
                       setAuditUserFilter(e.target.value)
                       setAuditPage(0)
                     }}
-                    className="w-full rounded-lg border border-slate-300 bg-white py-1.5 pl-8 pr-3 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    className="input !py-2 !pl-9"
                   />
                   <Search className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
                 </div>
@@ -232,7 +233,7 @@ export const AdminAuditPage: React.FC = () => {
                     setAuditActionFilter(e.target.value)
                     setAuditPage(0)
                   }}
-                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white py-1.5 px-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="input !py-2"
                 >
                   <option value="">Toutes les actions</option>
                   <option value="LOGIN">LOGIN (Connexion)</option>
@@ -253,7 +254,7 @@ export const AdminAuditPage: React.FC = () => {
                     setAuditUserFilter('')
                     setAuditPage(0)
                   }}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                  className="btn-secondary w-full !py-1.5 disabled:opacity-40"
                 >
                   <RotateCcw className="h-4 w-4" />
                   Réinitialiser
@@ -265,11 +266,11 @@ export const AdminAuditPage: React.FC = () => {
           {auditError ? <ErrorAlert error={auditError} /> : null}
 
           {/* Tableau d'audit */}
-          <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
+          <div className="card overflow-hidden">
             {auditLoading ? (
-              <div className="py-16">
-                <LoadingSpinner label="Chargement des événements d'audit..." />
-              </div>
+              <SkeletonRegion label="Chargement des événements d'audit...">
+                <TableSkeleton rows={9} cols={5} />
+              </SkeletonRegion>
             ) : auditLogs.length === 0 ? (
               <div className="py-16 text-center text-sm text-slate-500 dark:text-slate-400">
                 Aucun événement d'audit enregistré correspondant.
@@ -277,7 +278,7 @@ export const AdminAuditPage: React.FC = () => {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
-                  <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-400">
+                  <thead className="table-head">
                     <tr>
                       <th scope="col" className="px-5 py-3 font-semibold">Horodatage</th>
                       <th scope="col" className="px-5 py-3 font-semibold">Utilisateur</th>
@@ -287,7 +288,7 @@ export const AdminAuditPage: React.FC = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-mono text-xs">
                     {auditLogs.map((log: AuditLogItem) => (
-                      <tr key={log._id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                      <tr key={log._id} className="table-row">
                         <td className="px-5 py-3 whitespace-nowrap text-slate-500 dark:text-slate-400">
                           {new Date(log.at).toLocaleString('fr-FR', {
                             day: '2-digit',
@@ -370,14 +371,14 @@ export const AdminAuditPage: React.FC = () => {
             <>
               {usersError ? <ErrorAlert error={usersError} /> : null}
 
-              <div className="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
+              <div className="card overflow-hidden">
                 {usersLoading ? (
-                  <div className="py-16">
-                    <LoadingSpinner label="Chargement des utilisateurs..." />
-                  </div>
+                  <SkeletonRegion label="Chargement des utilisateurs...">
+                    <TableSkeleton rows={6} cols={5} />
+                  </SkeletonRegion>
                 ) : (
                   <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
-                    <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-400">
+                    <thead className="table-head">
                       <tr>
                         <th scope="col" className="px-5 py-3.5 font-semibold">Nom d'utilisateur</th>
                         <th scope="col" className="px-5 py-3.5 font-semibold">Rôle</th>
@@ -388,7 +389,7 @@ export const AdminAuditPage: React.FC = () => {
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
                       {users.map((u) => (
-                        <tr key={u.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                        <tr key={u.id} className="table-row">
                           <td className="px-5 py-3.5 font-medium text-slate-900 dark:text-white">
                             {u.username}
                             {u.username === currentUser?.username && (
@@ -453,7 +454,7 @@ export const AdminAuditPage: React.FC = () => {
       {/* --- TAB 3: PARAMÈTRES & SÉCURITÉ --- */}
       {activeTab === 'settings' && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-4">
+          <div className="card p-6 space-y-4">
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               Politique de Sécurité & Sessions
@@ -478,7 +479,7 @@ export const AdminAuditPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-4">
+          <div className="card p-6 space-y-4">
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <FileSpreadsheet className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Conformité & Archivage
@@ -519,7 +520,7 @@ export const AdminAuditPage: React.FC = () => {
                   value={createUsername}
                   onChange={(e) => setCreateUsername(e.target.value)}
                   placeholder="Ex: operator2"
-                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="input !py-2"
                 />
               </div>
 
@@ -533,7 +534,7 @@ export const AdminAuditPage: React.FC = () => {
                   value={createPassword}
                   onChange={(e) => setCreatePassword(e.target.value)}
                   placeholder="••••••••"
-                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="input !py-2"
                 />
               </div>
 
@@ -544,7 +545,7 @@ export const AdminAuditPage: React.FC = () => {
                 <select
                   value={createRole}
                   onChange={(e) => setCreateRole(e.target.value as UserRole)}
-                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="input !py-2"
                 >
                   <option value="operator">Opérateur (Inférences & Revues)</option>
                   <option value="supervisor">Superviseur (Validation qualité)</option>
@@ -558,14 +559,14 @@ export const AdminAuditPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                  className="btn-secondary !py-2 disabled:opacity-40"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={createSubmitting}
-                  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 disabled:opacity-50"
+                  className="btn-primary !py-2"
                 >
                   {createSubmitting ? <LoadingSpinner size="sm" /> : 'Créer le compte'}
                 </button>

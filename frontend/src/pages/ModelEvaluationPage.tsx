@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { getModels, getDomainBiasReport } from '../services/api'
 import type { ModelsList, DomainBiasReport } from '../types'
-import { LoadingSpinner } from '../components/common/LoadingSpinner'
+import { ModelsPageSkeleton } from '../components/ui/Skeleton'
 import { ErrorAlert } from '../components/common/ErrorAlert'
 
 export const ModelEvaluationPage: React.FC = () => {
@@ -32,11 +32,7 @@ export const ModelEvaluationPage: React.FC = () => {
   }, [])
 
   if (loading) {
-    return (
-      <div className="py-20">
-        <LoadingSpinner label="Chargement des spécifications et fiches modèles..." />
-      </div>
-    )
+    return <ModelsPageSkeleton />
   }
 
   const refMin = typeof domainReport?.reference_min === 'number'
@@ -48,7 +44,7 @@ export const ModelEvaluationPage: React.FC = () => {
     : [0.8124, 0.8941, 0.9255, 0.9482, 0.9896]
 
   return (
-    <div className="space-y-8">
+    <div className="stagger space-y-8">
       {/* En-tête */}
       <div>
         <div className="flex items-center gap-2">
@@ -67,7 +63,7 @@ export const ModelEvaluationPage: React.FC = () => {
       {/* Cartes des moteurs */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Carte YOLO */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between">
+        <div className="card p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <span className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
@@ -123,7 +119,7 @@ export const ModelEvaluationPage: React.FC = () => {
         </div>
 
         {/* Carte PatchCore */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between">
+        <div className="card p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <span className="inline-flex items-center gap-1.5 rounded-lg bg-purple-50 px-2.5 py-1 text-xs font-semibold text-purple-700 dark:bg-purple-950/60 dark:text-purple-300">
@@ -173,7 +169,7 @@ export const ModelEvaluationPage: React.FC = () => {
         </div>
 
         {/* Carte Similarité & Fusion */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between">
+        <div className="card p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
@@ -224,7 +220,7 @@ export const ModelEvaluationPage: React.FC = () => {
       </div>
 
       {/* Section Rapport de Biais de Domaine & Familiarité */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-5">
+      <div className="card p-6 space-y-5">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
           <div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">

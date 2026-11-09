@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './context/AuthContext'
@@ -6,13 +6,13 @@ import { ThemeProvider } from './context/ThemeContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { AppLayout } from './components/layout/AppLayout'
 import { LoginPage } from './pages/LoginPage'
-import { DashboardPlaceholder } from './pages/DashboardPlaceholder'
-import { NewInspectionPage } from './pages/NewInspectionPage'
-import { InspectionResultPage } from './pages/InspectionResultPage'
-import { InspectionsListPage } from './pages/InspectionsListPage'
-import { SimilaritySearchPage } from './pages/SimilaritySearchPage'
-import { ModelEvaluationPage } from './pages/ModelEvaluationPage'
-import { AdminAuditPage } from './pages/AdminAuditPage'
+const DashboardPlaceholder = lazy(() => import('./pages/DashboardPlaceholder').then((m) => ({ default: m.DashboardPlaceholder })))
+const NewInspectionPage = lazy(() => import('./pages/NewInspectionPage').then((m) => ({ default: m.NewInspectionPage })))
+const InspectionResultPage = lazy(() => import('./pages/InspectionResultPage').then((m) => ({ default: m.InspectionResultPage })))
+const InspectionsListPage = lazy(() => import('./pages/InspectionsListPage').then((m) => ({ default: m.InspectionsListPage })))
+const SimilaritySearchPage = lazy(() => import('./pages/SimilaritySearchPage').then((m) => ({ default: m.SimilaritySearchPage })))
+const ModelEvaluationPage = lazy(() => import('./pages/ModelEvaluationPage').then((m) => ({ default: m.ModelEvaluationPage })))
+const AdminAuditPage = lazy(() => import('./pages/AdminAuditPage').then((m) => ({ default: m.AdminAuditPage })))
 import { NotFoundPage } from './pages/NotFoundPage'
 
 const queryClient = new QueryClient({

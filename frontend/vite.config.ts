@@ -18,6 +18,8 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
+          charts: ['recharts'],
+          motion: ['framer-motion'],
         },
       },
     },
