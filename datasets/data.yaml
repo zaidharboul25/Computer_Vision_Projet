@@ -1,0 +1,15 @@
+path: /content/weaveguard_dataset_v2
+train: images/train
+val: images/val
+test: images/test
+nc: 9
+names:
+  0: DropStitch
+  1: Hole
+  2: Horizontal Mark
+  3: Knot
+  4: Oil Spot
+  5: Setup
+  6: Slub
+  7: Vertical LineMark
+  8: Yurn Dust

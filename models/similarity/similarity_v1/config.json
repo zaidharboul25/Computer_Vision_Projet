@@ -1,0 +1,26 @@
+{
+ "extractor_id": "resnet50_imagenet1k_v1_gap2048_l2",
+ "backbone": "resnet50",
+ "weights": "ImageNet IMAGENET1K_V1",
+ "pooling": "moyenne globale layer4",
+ "dim": 2048,
+ "normalization": "L2",
+ "preprocess": "Resize(256) plus petit côté + CenterCrop(256) + ImageNet mean/std",
+ "index_type": "faiss.IndexFlatIP (recherche exacte)",
+ "metric": "cosine_similarity",
+ "higher_is_better": true,
+ "k_default": 5,
+ "allowed_fields": {
+  "dtd": [
+   "ref_id",
+   "source",
+   "category"
+  ],
+  "weaveguard": [
+   "ref_id",
+   "source",
+   "classes",
+   "split"
+  ]
+ }
+}

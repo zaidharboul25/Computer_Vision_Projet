@@ -1,0 +1,180 @@
+{
+ "dataset_version": "v2",
+ "dataset_hash_sha256": "426ef147ab51e951d7ac3dfeefe59a4959cc75f7fddc5bc4516d98d3165b13ae",
+ "parent_dataset_hash_v1": "4b32d59d7b54688dfb8c07e93a92277213987ab770343ca974e49ac8b8f5f676",
+ "created": "2026-11-01T22:19:04",
+ "source": "textile_defects (v1 regroupé par quasi-doublons)",
+ "seed_split": 154,
+ "near_dup_hash": "dhash 256 bits (17x16, BOX)",
+ "near_dup_hamming_threshold_256": 16,
+ "n_groups": 587,
+ "n_images": 1086,
+ "images_per_split": {
+  "train": 774,
+  "val": 162,
+  "test": 150
+ },
+ "images_per_class": {
+  "DropStitch": {
+   "train": 82,
+   "val": 17,
+   "test": 17,
+   "total": 116
+  },
+  "Hole": {
+   "train": 86,
+   "val": 17,
+   "test": 18,
+   "total": 121
+  },
+  "Horizontal Mark": {
+   "train": 68,
+   "val": 15,
+   "test": 10,
+   "total": 93
+  },
+  "Knot": {
+   "train": 77,
+   "val": 19,
+   "test": 17,
+   "total": 113
+  },
+  "Oil Spot": {
+   "train": 62,
+   "val": 11,
+   "test": 13,
+   "total": 86
+  },
+  "Setup": {
+   "train": 76,
+   "val": 17,
+   "test": 15,
+   "total": 108
+  },
+  "Slub": {
+   "train": 84,
+   "val": 17,
+   "test": 17,
+   "total": 118
+  },
+  "Vertical LineMark": {
+   "train": 131,
+   "val": 27,
+   "test": 21,
+   "total": 179
+  },
+  "Yurn Dust": {
+   "train": 138,
+   "val": 26,
+   "test": 29,
+   "total": 193
+  }
+ },
+ "boxes_per_class": {
+  "DropStitch": {
+   "train": 93,
+   "val": 17,
+   "test": 17,
+   "total": 127
+  },
+  "Hole": {
+   "train": 87,
+   "val": 17,
+   "test": 18,
+   "total": 122
+  },
+  "Horizontal Mark": {
+   "train": 70,
+   "val": 15,
+   "test": 10,
+   "total": 95
+  },
+  "Knot": {
+   "train": 78,
+   "val": 19,
+   "test": 17,
+   "total": 114
+  },
+  "Oil Spot": {
+   "train": 125,
+   "val": 11,
+   "test": 18,
+   "total": 154
+  },
+  "Setup": {
+   "train": 92,
+   "val": 19,
+   "test": 19,
+   "total": 130
+  },
+  "Slub": {
+   "train": 84,
+   "val": 17,
+   "test": 17,
+   "total": 118
+  },
+  "Vertical LineMark": {
+   "train": 217,
+   "val": 43,
+   "test": 39,
+   "total": 299
+  },
+  "Yurn Dust": {
+   "train": 160,
+   "val": 34,
+   "test": 35,
+   "total": 229
+  }
+ },
+ "moved_vs_v1": 492,
+ "near_pairs_across_splits": {
+  "0-5": {
+   "v1": 32,
+   "v2": 0
+  },
+  "6-12": {
+   "v1": 39,
+   "v2": 0
+  },
+  "13-20": {
+   "v1": 72,
+   "v2": 26
+  },
+  "21-30": {
+   "v1": 185,
+   "v2": 167
+  },
+  "31-45": {
+   "v1": 838,
+   "v2": 845
+  }
+ },
+ "normal_crops": {
+  "size_px": 512,
+  "per_split": {
+   "train": {
+    "crops": 1393,
+    "images_too_small": 5
+   },
+   "val": {
+    "crops": 248,
+    "images_too_small": 3
+   },
+   "test": {
+    "crops": 257,
+    "images_too_small": 2
+   }
+  }
+ },
+ "classes": [
+  "DropStitch",
+  "Hole",
+  "Horizontal Mark",
+  "Knot",
+  "Oil Spot",
+  "Setup",
+  "Slub",
+  "Vertical LineMark",
+  "Yurn Dust"
+ ]
+}

@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environments
+.venv/
+backend/.venv/
+env/
+venv/
+ENV/
+
+# Configuration and secrets
+.env
+.env.*
+!.env.example
+!.env.docker.example
+backend/.env
+*.local
+
+# Storage & runtime data
+storage/
+backend/storage/
+*.log
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+.DS_Store
+
+# Tests de parité — sorties de référence gelées (générées par scripts/generate_parity_reference.py)
+tests/parity/reference_outputs/
+
+# Candidats d'optimisation (modèles alternatifs, datasets fine-tuning)
+candidates/
+
+# Données brutes externes (volumétrie > 2 Go dépassant le quota GitHub)
+data/
+
+# Loose test images at root
+/*.jpg
+/*.webp
+/*.png
+
+# Benchmarks JSON
+docs/perf_baseline.json
+docs/perf_after.json
+
+# Pytest / Coverage / Tooling
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+
+# IDE / OS
+.vscode/
+.idea/
+Thumbs.db
+[Dd]esktop.ini
+

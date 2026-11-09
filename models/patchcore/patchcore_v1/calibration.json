@@ -1,0 +1,79 @@
+{
+ "tau_global": 1.638649755716323,
+ "fpr_target": 0.05,
+ "auroc_val_windows": 0.8807505498533724,
+ "n_normal_val": 248,
+ "n_defect_val": 176,
+ "normal_score_percentiles": {
+  "50": 1.0343761444091797,
+  "90": 1.4749200344085693,
+  "95": 1.638649755716323,
+  "99": 1.8600202846527099,
+  "100": 1.98044753074646
+ },
+ "table": [
+  {
+   "FPR_cible": 0.01,
+   "seuil": 1.86,
+   "rappel_global": 0.369,
+   "DropStitch": 1.0,
+   "Hole": 0.41,
+   "Horizontal Mark": 0.0,
+   "Knot": 0.37,
+   "Oil Spot": 0.09,
+   "Setup": 0.94,
+   "Slub": 0.69,
+   "Vertical LineMark": 0.0,
+   "Yurn Dust": 0.2
+  },
+  {
+   "FPR_cible": 0.02,
+   "seuil": 1.814,
+   "rappel_global": 0.392,
+   "DropStitch": 1.0,
+   "Hole": 0.41,
+   "Horizontal Mark": 0.0,
+   "Knot": 0.42,
+   "Oil Spot": 0.18,
+   "Setup": 0.94,
+   "Slub": 0.81,
+   "Vertical LineMark": 0.0,
+   "Yurn Dust": 0.2
+  },
+  {
+   "FPR_cible": 0.05,
+   "seuil": 1.639,
+   "rappel_global": 0.489,
+   "DropStitch": 1.0,
+   "Hole": 0.47,
+   "Horizontal Mark": 0.0,
+   "Knot": 0.79,
+   "Oil Spot": 0.36,
+   "Setup": 1.0,
+   "Slub": 0.94,
+   "Vertical LineMark": 0.0,
+   "Yurn Dust": 0.33
+  },
+  {
+   "FPR_cible": 0.1,
+   "seuil": 1.475,
+   "rappel_global": 0.597,
+   "DropStitch": 1.0,
+   "Hole": 0.47,
+   "Horizontal Mark": 0.0,
+   "Knot": 0.84,
+   "Oil Spot": 0.45,
+   "Setup": 1.0,
+   "Slub": 1.0,
+   "Vertical LineMark": 0.21,
+   "Yurn Dust": 0.63
+  }
+ ],
+ "min_region_area": 64,
+ "latency_ms": {
+  "window_512": 43.53654384613037,
+  "full_image": 265.83733558654785,
+  "gpu": "Tesla T4"
+ },
+ "score_meaning": "distance L2 au plus proche patch normal ; \u00e9chelle brute, pas une probabilit\u00e9"
+}

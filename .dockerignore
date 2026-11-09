@@ -1,0 +1,59 @@
+# WeaveGuard AI - Docker Ignore
+# Exclut rigoureusement tout ce qui ne doit pas alourdir le contexte de build
+
+# Git & configuration
+.git/
+.github/
+.gemini/
+
+# Environnements virtuels & caches Python
+.venv*/
+backend/.venv*/
+env*/
+venv*/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+backend/.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+
+# Notebooks & expérimentations
+*.ipynb
+notebooks/
+
+# Volumétrie lourde montée au runtime (lecture seule)
+models/
+datasets/
+data/
+
+# Stockage local hôte & logs
+storage/
+backend/storage/
+*.log
+
+# Frontend (dépendances, caches et builds hôtes)
+node_modules/
+frontend/node_modules/
+frontend/.vite/
+frontend/dist/
+
+# Secrets et variables d'environnement
+.env
+.env.*
+!.env.docker.example
+!frontend/.env*
+
+# Tests de parité & candidats (inutiles dans le build runtime)
+tests/parity/
+candidates/
+data/external_test/
+
+# Documentation (seul openapi.json est requis pour la validation des tests)
+docs/*.md
+docs/screenshots/
+docs/benchmark_results.json
+

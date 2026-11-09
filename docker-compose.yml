@@ -1,0 +1,86 @@
+# ==============================================================================
+# WeaveGuard AI - Docker Compose (Environnement de test conteneurisé)
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # Service Base de données MongoDB officielle (8.x)
+  # ----------------------------------------------------------------------------
+  mongo:
+    image: mongo:8.2.12
+    container_name: weaveguard_mongo
+    restart: unless-stopped
+    # Aucun port publié sur l'hôte par défaut pour la sécurité réseau interne.
+    # Pour inspecter la base avec MongoDB Compass depuis l'hôte, décommenter :
+    # ports:
+    #   - "127.0.0.1:27018:27017"
+    volumes:
+      - weaveguard_mongo_data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping')\""]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ----------------------------------------------------------------------------
+  # Service Applicatif WeaveGuard AI (FastAPI + Modèles CPU)
+  # ----------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: weaveguard_app
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - .env.docker
+    # Liaison exclusive sur 127.0.0.1 (jamais 0.0.0.0 sur la machine hôte)
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      # Montages en lecture seule (:ro) depuis l'hôte
+      - ./models:/app/models:ro
+      - ./datasets:/app/datasets:ro
+      - ./data/images:/app/data/images:ro
+      # Volume nommé persistant pour les fichiers générés (images, overlays, heatmaps)
+      - weaveguard_storage:/app/storage
+
+  # ----------------------------------------------------------------------------
+  # Profil de Test Automatisé (exécuté sur demande via --profile test)
+  # ----------------------------------------------------------------------------
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: test
+    container_name: weaveguard_tests
+    profiles:
+      - test
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - .env.docker
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017
+      # Base isolée stricte pour les tests (ne touche JAMAIS à 'weaveguard')
+      - DB_NAME=weaveguard_test
+      - ENV=dev
+      - DEVICE=cpu
+    volumes:
+      - ./models:/app/models:ro
+      - ./datasets:/app/datasets:ro
+      - ./data/images:/app/data/images:ro
+      - weaveguard_storage:/app/storage
+    command: ["pytest", "backend/tests", "-m", "not slow", "-v"]
+
+volumes:
+  weaveguard_mongo_data:
+    name: weaveguard_mongo_data
+  weaveguard_storage:
+    name: weaveguard_storage
+

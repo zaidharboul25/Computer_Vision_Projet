@@ -1,0 +1,90 @@
+{
+ "n_normal": 257,
+ "n_defect": 174,
+ "auroc_windows": 0.9167225725658572,
+ "false_alarm_rate_normal_windows": 0.042801556420233464,
+ "recall_defect_windows": 0.5632183908045977,
+ "recall_by_class": {
+  "DropStitch": {
+   "n": 16,
+   "recall": 1.0
+  },
+  "Hole": {
+   "n": 18,
+   "recall": 0.833
+  },
+  "Horizontal Mark": {
+   "n": 10,
+   "recall": 0.0
+  },
+  "Knot": {
+   "n": 17,
+   "recall": 0.765
+  },
+  "Oil Spot": {
+   "n": 15,
+   "recall": 0.333
+  },
+  "Setup": {
+   "n": 17,
+   "recall": 1.0
+  },
+  "Slub": {
+   "n": 17,
+   "recall": 0.941
+  },
+  "Vertical LineMark": {
+   "n": 30,
+   "recall": 0.067
+  },
+  "Yurn Dust": {
+   "n": 34,
+   "recall": 0.412
+  }
+ },
+ "tau": 1.638649755716323,
+ "regions_full_images": {
+  "n_images": 150,
+  "pct_images_flagged": 0.6,
+  "mean_unannotated_regions_per_image": 0.62,
+  "gt_boxes_found": {
+   "DropStitch": {
+    "n": 17,
+    "found": 0.941
+   },
+   "Hole": {
+    "n": 18,
+    "found": 0.722
+   },
+   "Horizontal Mark": {
+    "n": 10,
+    "found": 0.0
+   },
+   "Knot": {
+    "n": 17,
+    "found": 0.765
+   },
+   "Oil Spot": {
+    "n": 18,
+    "found": 0.278
+   },
+   "Setup": {
+    "n": 19,
+    "found": 0.947
+   },
+   "Slub": {
+    "n": 17,
+    "found": 0.765
+   },
+   "Vertical LineMark": {
+    "n": 39,
+    "found": 0.0
+   },
+   "Yurn Dust": {
+    "n": 35,
+    "found": 0.371
+   }
+  },
+  "gt_boxes_found_overall": 0.479
+ }
+}

@@ -1,0 +1,249 @@
+{
+ "fusion_id": "fusion_v1",
+ "rule": [
+  "toutes les détections YOLO (conf >= seuil) conservées, classe et score intacts",
+  "région PatchCore recouvrant une détection YOLO : rattachée en corroboration, aucune modification",
+  "région PatchCore sans équivalent YOLO : région distincte \"Anomalie suspectée — score de distance\", sans classe"
+ ],
+ "overlap_rule": ">= 10 % de la boîte ou >= 50 % de la région",
+ "free_parameters": "aucun (seuils hérités : YOLO conf=0.311, PatchCore tau=1.639)",
+ "yolo": {
+  "experiment": "v8n_640",
+  "weights_sha256": "ea85637ad75b64dcbdcc562a297bad0286ff45e6f7d4d610d76963900c9b7b89",
+  "conf": 0.3113113113113113,
+  "imgsz": 640
+ },
+ "patchcore": {
+  "memory_sha256": "5d2373fe0a2849494561d078b5fb9835ba77a6934c86c234b0aded8dd7974b61",
+  "tau": 1.638649755716323,
+  "min_region_area": 64,
+  "scale": 0.5
+ },
+ "dataset_hash": 1086.0,
+ "validation": {
+  "n_images": 162,
+  "n_gt": 192,
+  "recalls": {
+   "YOLO seul": {
+    "rappel": 0.766,
+    "IC95": [
+     0.698,
+     0.835
+    ]
+   },
+   "PatchCore seul (recouvrement >= 10 % de la boîte)": {
+    "rappel": 0.427,
+    "IC95": [
+     0.347,
+     0.508
+    ]
+   },
+   "PatchCore seul (IoU >= 0.3)": {
+    "rappel": 0.286,
+    "IC95": [
+     0.223,
+     0.354
+    ]
+   },
+   "Union YOLO + PatchCore (souple)": {
+    "rappel": 0.797,
+    "IC95": [
+     0.73,
+     0.864
+    ]
+   },
+   "Union YOLO + PatchCore (IoU >= 0.3)": {
+    "rappel": 0.776,
+    "IC95": [
+     0.709,
+     0.845
+    ]
+   }
+  },
+  "rescued_by_patchcore_loose": 6,
+  "rescued_by_patchcore_strict": 2,
+  "missed_by_yolo": 45,
+  "by_class": {
+   "DropStitch": {
+    "n": 17,
+    "yolo": 17,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Hole": {
+    "n": 17,
+    "yolo": 14,
+    "rescued_loose": 1,
+    "rescued_strict": 0
+   },
+   "Horizontal Mark": {
+    "n": 15,
+    "yolo": 14,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Knot": {
+    "n": 19,
+    "yolo": 16,
+    "rescued_loose": 2,
+    "rescued_strict": 1
+   },
+   "Oil Spot": {
+    "n": 11,
+    "yolo": 9,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Setup": {
+    "n": 19,
+    "yolo": 19,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Slub": {
+    "n": 17,
+    "yolo": 15,
+    "rescued_loose": 2,
+    "rescued_strict": 1
+   },
+   "Vertical LineMark": {
+    "n": 43,
+    "yolo": 24,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Yurn Dust": {
+    "n": 34,
+    "yolo": 19,
+    "rescued_loose": 1,
+    "rescued_strict": 0
+   }
+  },
+  "yolo_fp_per_image": 0.198,
+  "patchcore_only_regions_per_image": 0.401,
+  "total_regions_per_image": 1.506,
+  "corroboration": {
+   "rate_among_yolo_true_positives": 0.585,
+   "n_tp": 147,
+   "rate_among_yolo_false_positives": 0.406,
+   "n_fp": 32
+  }
+ },
+ "test": {
+  "n_images": 150,
+  "n_gt": 190,
+  "recalls": {
+   "YOLO seul": {
+    "rappel": 0.779,
+    "IC95": [
+     0.707,
+     0.847
+    ]
+   },
+   "PatchCore seul (recouvrement >= 10 % de la boîte)": {
+    "rappel": 0.479,
+    "IC95": [
+     0.394,
+     0.57
+    ]
+   },
+   "PatchCore seul (IoU >= 0.3)": {
+    "rappel": 0.316,
+    "IC95": [
+     0.25,
+     0.394
+    ]
+   },
+   "Union YOLO + PatchCore (souple)": {
+    "rappel": 0.811,
+    "IC95": [
+     0.739,
+     0.879
+    ]
+   },
+   "Union YOLO + PatchCore (IoU >= 0.3)": {
+    "rappel": 0.784,
+    "IC95": [
+     0.711,
+     0.853
+    ]
+   }
+  },
+  "rescued_by_patchcore_loose": 6,
+  "rescued_by_patchcore_strict": 1,
+  "missed_by_yolo": 42,
+  "by_class": {
+   "DropStitch": {
+    "n": 17,
+    "yolo": 17,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Hole": {
+    "n": 18,
+    "yolo": 13,
+    "rescued_loose": 3,
+    "rescued_strict": 0
+   },
+   "Horizontal Mark": {
+    "n": 10,
+    "yolo": 9,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Knot": {
+    "n": 17,
+    "yolo": 17,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Oil Spot": {
+    "n": 18,
+    "yolo": 16,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Setup": {
+    "n": 19,
+    "yolo": 19,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Slub": {
+    "n": 17,
+    "yolo": 16,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Vertical LineMark": {
+    "n": 39,
+    "yolo": 17,
+    "rescued_loose": 0,
+    "rescued_strict": 0
+   },
+   "Yurn Dust": {
+    "n": 35,
+    "yolo": 24,
+    "rescued_loose": 3,
+    "rescued_strict": 1
+   }
+  },
+  "yolo_fp_per_image": 0.18,
+  "patchcore_only_regions_per_image": 0.64,
+  "total_regions_per_image": 1.807,
+  "corroboration": {
+   "rate_among_yolo_true_positives": 0.608,
+   "n_tp": 148,
+   "rate_among_yolo_false_positives": 0.444,
+   "n_fp": 27
+  }
+ },
+ "external": {},
+ "limits": [
+  "PatchCore : critère de localisation plus souple que celui de YOLO (recouvrement >= 10 % de la boîte) ; version stricte IoU >= 0.3 également rapportée",
+  "régions PatchCore hors annotations = fausses alertes OU défauts non annotés (indistinguables ici)",
+  "la corroboration aide à prioriser la revue humaine ; elle ne remplace pas la décision de l opérateur",
+  "résultats valables pour des tissus proches de ceux du dataset (voir diagnostic de biais de domaine)"
+ ],
+ "created": "2026-11-02T01:23:32"
+}

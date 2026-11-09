@@ -1,0 +1,62 @@
+{
+  "1. Sans filtre (baseline)": {
+    "median_lat_ms": 7.21,
+    "total_items": 1000,
+    "stage": "LIMIT -> FETCH -> IXSCAN",
+    "index_name": "created_at_-1",
+    "exec_time_ms": 0,
+    "docs_examined": 20,
+    "keys_examined": 20,
+    "n_returned": 20
+  },
+  "2. Filtre statut (status=done)": {
+    "median_lat_ms": 7.8,
+    "total_items": 600,
+    "stage": "LIMIT -> FETCH -> IXSCAN",
+    "index_name": "status_1_created_at_-1",
+    "exec_time_ms": 0,
+    "docs_examined": 20,
+    "keys_examined": 20,
+    "n_returned": 20
+  },
+  "3. Filtre utilisateur (created_by=operator_0)": {
+    "median_lat_ms": 7.64,
+    "total_items": 200,
+    "stage": "LIMIT -> FETCH -> IXSCAN",
+    "index_name": "created_by_1_created_at_-1",
+    "exec_time_ms": 0,
+    "docs_examined": 20,
+    "keys_examined": 20,
+    "n_returned": 20
+  },
+  "4. Filtre dates (200 dernières min)": {
+    "median_lat_ms": 7.2,
+    "total_items": 201,
+    "stage": "LIMIT -> FETCH -> IXSCAN",
+    "index_name": "created_at_-1",
+    "exec_time_ms": 0,
+    "docs_examined": 20,
+    "keys_examined": 20,
+    "n_returned": 20
+  },
+  "5. Filtre revue (review_status=reviewed)": {
+    "median_lat_ms": 9.88,
+    "total_items": 50,
+    "stage": "LIMIT -> FETCH -> IXSCAN",
+    "index_name": "created_at_-1",
+    "exec_time_ms": 1,
+    "docs_examined": 20,
+    "keys_examined": 20,
+    "n_returned": 20
+  },
+  "6. Filtre préfixe ID (id_filter=0000)": {
+    "median_lat_ms": 7.0,
+    "total_items": 250,
+    "stage": "LIMIT -> FETCH -> IXSCAN",
+    "index_name": "created_at_-1",
+    "exec_time_ms": 1,
+    "docs_examined": 77,
+    "keys_examined": 77,
+    "n_returned": 20
+  }
+}

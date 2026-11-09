@@ -1,0 +1,109 @@
+{
+ "n_images": 150,
+ "n_gt": 190,
+ "recalls": {
+  "YOLO seul": {
+   "rappel": 0.779,
+   "IC95": [
+    0.707,
+    0.847
+   ]
+  },
+  "PatchCore seul (recouvrement >= 10 % de la boîte)": {
+   "rappel": 0.479,
+   "IC95": [
+    0.394,
+    0.57
+   ]
+  },
+  "PatchCore seul (IoU >= 0.3)": {
+   "rappel": 0.316,
+   "IC95": [
+    0.25,
+    0.394
+   ]
+  },
+  "Union YOLO + PatchCore (souple)": {
+   "rappel": 0.811,
+   "IC95": [
+    0.739,
+    0.879
+   ]
+  },
+  "Union YOLO + PatchCore (IoU >= 0.3)": {
+   "rappel": 0.784,
+   "IC95": [
+    0.711,
+    0.853
+   ]
+  }
+ },
+ "rescued_by_patchcore_loose": 6,
+ "rescued_by_patchcore_strict": 1,
+ "missed_by_yolo": 42,
+ "by_class": {
+  "DropStitch": {
+   "n": 17,
+   "yolo": 17,
+   "rescued_loose": 0,
+   "rescued_strict": 0
+  },
+  "Hole": {
+   "n": 18,
+   "yolo": 13,
+   "rescued_loose": 3,
+   "rescued_strict": 0
+  },
+  "Horizontal Mark": {
+   "n": 10,
+   "yolo": 9,
+   "rescued_loose": 0,
+   "rescued_strict": 0
+  },
+  "Knot": {
+   "n": 17,
+   "yolo": 17,
+   "rescued_loose": 0,
+   "rescued_strict": 0
+  },
+  "Oil Spot": {
+   "n": 18,
+   "yolo": 16,
+   "rescued_loose": 0,
+   "rescued_strict": 0
+  },
+  "Setup": {
+   "n": 19,
+   "yolo": 19,
+   "rescued_loose": 0,
+   "rescued_strict": 0
+  },
+  "Slub": {
+   "n": 17,
+   "yolo": 16,
+   "rescued_loose": 0,
+   "rescued_strict": 0
+  },
+  "Vertical LineMark": {
+   "n": 39,
+   "yolo": 17,
+   "rescued_loose": 0,
+   "rescued_strict": 0
+  },
+  "Yurn Dust": {
+   "n": 35,
+   "yolo": 24,
+   "rescued_loose": 3,
+   "rescued_strict": 1
+  }
+ },
+ "yolo_fp_per_image": 0.18,
+ "patchcore_only_regions_per_image": 0.64,
+ "total_regions_per_image": 1.807,
+ "corroboration": {
+  "rate_among_yolo_true_positives": 0.608,
+  "n_tp": 148,
+  "rate_among_yolo_false_positives": 0.444,
+  "n_fp": 27
+ }
+}

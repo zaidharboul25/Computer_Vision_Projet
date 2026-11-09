@@ -1,0 +1,183 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WeaveGuardInspectionExport",
+  "description": "Schéma de validation contractuel pour les exports d'inspection WeaveGuard AI (AC-04, AC-07, §9, §10.2).",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "inspection_id",
+    "created_at",
+    "created_by",
+    "status",
+    "partial",
+    "image",
+    "engines",
+    "predictions",
+    "human_reviews",
+    "reproducibility"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "weaveguard.inspection/1.0"
+    },
+    "inspection_id": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9\\-]{36}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "running", "done", "error"]
+    },
+    "partial": {
+      "type": "boolean"
+    },
+    "image": {
+      "type": "object",
+      "required": ["filename", "width", "height", "stored_width", "stored_height", "resize_factor"],
+      "additionalProperties": false,
+      "properties": {
+        "filename": { "type": "string" },
+        "format": { "type": "string" },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "stored_width": { "type": "integer", "minimum": 1 },
+        "stored_height": { "type": "integer", "minimum": 1 },
+        "resize_factor": { "type": "number", "minimum": 0 },
+        "scale_mode": { "type": "string", "enum": ["native", "normalized"] },
+        "warnings": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "domain_check": {
+      "type": ["object", "null"],
+      "properties": {
+        "max_similarity": { "type": ["number", "null"] },
+        "reference_min": { "type": "number" },
+        "reference_source": { "type": "string" },
+        "status": { "type": "string", "enum": ["in_range", "below_range", "unavailable"] }
+      },
+      "required": ["reference_min", "reference_source", "status"],
+      "additionalProperties": false
+    },
+    "engines": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": { "type": "string", "enum": ["pending", "running", "ok", "error", "skipped"] },
+          "version": { "type": ["string", "null"] },
+          "error": { "type": ["string", "null"] },
+          "latency_ms": {
+            "type": ["object", "null"],
+            "properties": {
+              "preprocess": { "type": "number" },
+              "model": { "type": "number" },
+              "postprocess": { "type": "number" },
+              "total": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "predictions": {
+      "type": "object",
+      "required": ["regions_count", "regions"],
+      "additionalProperties": false,
+      "properties": {
+        "regions_count": { "type": "integer", "minimum": 0 },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "engine", "bbox", "area", "label"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string" },
+              "display_id": { "type": ["string", "null"] },
+              "engine": { "type": "string", "enum": ["yolo", "patchcore"] },
+              "bbox": {
+                "type": "array",
+                "items": { "type": "number" },
+                "minItems": 4,
+                "maxItems": 4,
+                "description": "[x, y, largeur, hauteur] en repère de l'image stockée"
+              },
+              "area": { "type": "number", "minimum": 0 },
+              "label": { "type": "string" },
+              "score": { "type": ["number", "null"] },
+              "classification": { "type": ["string", "null"] },
+              "tau": { "type": ["number", "null"] },
+              "corroboration": {
+                "type": ["object", "null"],
+                "properties": {
+                  "detected": { "type": "boolean" },
+                  "overlap_ratio_box": { "type": ["number", "null"] },
+                  "overlap_ratio_region": { "type": ["number", "null"] },
+                  "score_patchcore": { "type": ["number", "null"] },
+                  "tau_patchcore": { "type": ["number", "null"] }
+                }
+              }
+            }
+          }
+        },
+        "heatmap_meta": {
+          "type": ["object", "null"],
+          "properties": {
+            "scale": { "type": "string" },
+            "min": { "type": "number" },
+            "max": { "type": "number" },
+            "tau": { "type": "number" },
+            "vmax": { "type": "number" },
+            "width": { "type": "integer" },
+            "height": { "type": "integer" }
+          }
+        }
+      }
+    },
+    "human_reviews": {
+      "type": "array",
+      "description": "Historique des revues humaines conservé séparément des prédictions (AC-07)",
+      "items": {
+        "type": "object",
+        "required": ["id", "region_id", "decision", "reviewed_by", "created_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "region_id": { "type": "string" },
+          "decision": { "type": "string", "enum": ["Confirmé", "Rejeté", "Incertain"] },
+          "rejection_reason": { "type": ["string", "null"] },
+          "comment": { "type": ["string", "null"] },
+          "reviewed_by": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "reproducibility": {
+      "type": "object",
+      "required": ["models_sha256", "inference_device"],
+      "properties": {
+        "models_sha256": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "inference_device": { "type": "string" }
+      }
+    }
+  }
+}

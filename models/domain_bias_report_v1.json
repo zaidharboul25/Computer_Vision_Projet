@@ -1,0 +1,106 @@
+{
+ "dataset_hash": "426ef147ab51e951",
+ "yolo": "v8n_640",
+ "conf": 0.3113113113113113,
+ "imgsz": 640,
+ "nmi": [
+  {
+   "k": 5,
+   "descripteur": "ResNet-50",
+   "NMI": 0.434,
+   "NMI_hasard_moy": 0.008,
+   "NMI_hasard_p95": 0.012
+  },
+  {
+   "k": 5,
+   "descripteur": "couleur (6 nombres)",
+   "NMI": 0.191,
+   "NMI_hasard_moy": 0.008,
+   "NMI_hasard_p95": 0.011
+  },
+  {
+   "k": 10,
+   "descripteur": "ResNet-50",
+   "NMI": 0.56,
+   "NMI_hasard_moy": 0.015,
+   "NMI_hasard_p95": 0.02
+  },
+  {
+   "k": 10,
+   "descripteur": "couleur (6 nombres)",
+   "NMI": 0.228,
+   "NMI_hasard_moy": 0.016,
+   "NMI_hasard_p95": 0.02
+  },
+  {
+   "k": 20,
+   "descripteur": "ResNet-50",
+   "NMI": 0.613,
+   "NMI_hasard_moy": 0.03,
+   "NMI_hasard_p95": 0.036
+  },
+  {
+   "k": 20,
+   "descripteur": "couleur (6 nombres)",
+   "NMI": 0.298,
+   "NMI_hasard_moy": 0.03,
+   "NMI_hasard_p95": 0.036
+  }
+ ],
+ "class_top_cluster_share": {
+  "DropStitch": 0.94,
+  "Hole": 0.32,
+  "Horizontal Mark": 0.44,
+  "Knot": 0.65,
+  "Oil Spot": 0.57,
+  "Setup": 0.91,
+  "Slub": 0.58,
+  "Vertical LineMark": 0.52,
+  "Yurn Dust": 0.51
+ },
+ "valtest_in_trained_clusters": 1.0,
+ "familiarity_quantiles": [
+  0.8124200105667114,
+  0.9316391150156657,
+  0.9564536412556967,
+  0.989840567111969
+ ],
+ "tiers": [
+  {
+   "tier": "1_peu familier",
+   "images": 104,
+   "boîtes_GT": 120,
+   "rappel_classe": 0.808,
+   "IC95_classe": "[0.73, 0.89]",
+   "rappel_localisation": 0.825,
+   "IC95_loc": "[0.75, 0.90]",
+   "FP_par_image": 0.16
+  },
+  {
+   "tier": "2_intermédiaire",
+   "images": 104,
+   "boîtes_GT": 130,
+   "rappel_classe": 0.769,
+   "IC95_classe": "[0.69, 0.84]",
+   "rappel_localisation": 0.777,
+   "IC95_loc": "[0.70, 0.85]",
+   "FP_par_image": 0.17
+  },
+  {
+   "tier": "3_familier",
+   "images": 104,
+   "boîtes_GT": 132,
+   "rappel_classe": 0.735,
+   "IC95_classe": "[0.64, 0.83]",
+   "rappel_localisation": 0.735,
+   "IC95_loc": "[0.64, 0.83]",
+   "FP_par_image": 0.17
+  }
+ ],
+ "spearman": {
+  "rho": -0.0930535097341807,
+  "p": 0.06926346436859394,
+  "n_boxes": 382
+ },
+ "note": "analyse descriptive post hoc sur val+test ; aucun modèle ni seuil modifié"
+}

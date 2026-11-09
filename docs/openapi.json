@@ -1,0 +1,4063 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WeaveGuard AI - API d'Inspection Textile",
+    "description": "Plateforme de détection de défauts textiles par vision par ordinateur (YOLO, PatchCore, Similarité).",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Santé système"
+        ],
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Authentification"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLoginResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "Authentification"
+        ],
+        "summary": "Get Me",
+        "operationId": "get_me_api_v1_auth_me_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "tags": [
+          "Gestion des utilisateurs"
+        ],
+        "summary": "List Users",
+        "operationId": "list_users_api_v1_users_get",
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponse"
+                  },
+                  "title": "Response List Users Api V1 Users Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Gestion des utilisateurs"
+        ],
+        "summary": "Create User",
+        "operationId": "create_user_api_v1_users_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{user_id}": {
+      "patch": {
+        "tags": [
+          "Gestion des utilisateurs"
+        ],
+        "summary": "Update User",
+        "operationId": "update_user_api_v1_users__user_id__patch",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{user_id}/reset-password": {
+      "post": {
+        "tags": [
+          "Gestion des utilisateurs"
+        ],
+        "summary": "Réinitialiser le mot de passe d'un utilisateur",
+        "operationId": "reset_password_api_v1_users__user_id__reset_password_post",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspections": {
+      "post": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Créer et soumettre une inspection",
+        "description": "Télécharge une image textile, la valide et l'ajoute à la file d'attente d'inspection.",
+        "operationId": "create_inspection_api_v1_inspections_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_inspection_api_v1_inspections_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Lister l'historique des inspections",
+        "description": "Renvoie la liste paginée des inspections selon les droits de visibilité de l'utilisateur.",
+        "operationId": "list_inspections_api_v1_inspections_get",
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par statut (pending, running, done, error)",
+              "title": "Status"
+            },
+            "description": "Filtrer par statut (pending, running, done, error)"
+          },
+          {
+            "name": "created_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par opérateur créateur",
+              "title": "Created By"
+            },
+            "description": "Filtrer par opérateur créateur"
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Date minimale de soumission",
+              "title": "Date From"
+            },
+            "description": "Date minimale de soumission"
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Date maximale de soumission",
+              "title": "Date To"
+            },
+            "description": "Date maximale de soumission"
+          },
+          {
+            "name": "id_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par préfixe d'identifiant",
+              "title": "Id Filter"
+            },
+            "description": "Filtrer par préfixe d'identifiant"
+          },
+          {
+            "name": "review_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par statut de revue (reviewed, unreviewed)",
+              "title": "Review Status"
+            },
+            "description": "Filtrer par statut de revue (reviewed, unreviewed)"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspections/{inspection_id}": {
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Consulter les détails d'une inspection",
+        "description": "Consulte une inspection par son ID. Renvoie 404 si inexistante ou non autorisée.",
+        "operationId": "get_inspection_api_v1_inspections__inspection_id__get",
+        "parameters": [
+          {
+            "name": "inspection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Inspection Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspections/{inspection_id}/regions": {
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Consulter les régions détectées d'une inspection",
+        "description": "Récupère les régions détectées associées à une inspection.",
+        "operationId": "get_inspection_regions_api_v1_inspections__inspection_id__regions_get",
+        "parameters": [
+          {
+            "name": "inspection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Inspection Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegionListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspections/{inspection_id}/image": {
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Télécharger l'image d'inspection stockée",
+        "description": "Renvoie l'image stockée. Exige un jeton Bearer dans l'en-tête Authorization (Exigence A).",
+        "operationId": "get_inspection_image_api_v1_inspections__inspection_id__image_get",
+        "parameters": [
+          {
+            "name": "inspection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Inspection Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image stockée au format PNG",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "image/png": {}
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Inspection ou image introuvable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspections/{inspection_id}/heatmap": {
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Télécharger la carte de chaleur PatchCore normalisée",
+        "description": "Renvoie la heatmap PNG 8-bit normalisée. Exige un jeton Bearer dans l'en-tête Authorization.",
+        "operationId": "get_inspection_heatmap_api_v1_inspections__inspection_id__heatmap_get",
+        "parameters": [
+          {
+            "name": "inspection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Inspection Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Carte de chaleur PatchCore normalisée 8-bit (PNG)",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "image/png": {}
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Inspection ou carte de chaleur introuvable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspections/{inspection_id}/overlay": {
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Télécharger l'overlay annoté",
+        "description": "Renvoie l'overlay annoté (AC-03). Exige un jeton Bearer dans l'en-tête Authorization.\n\nSupporte les formats PNG (par défaut, sans perte), WebP et JPEG (qualité 90).",
+        "operationId": "get_inspection_overlay_api_v1_inspections__inspection_id__overlay_get",
+        "parameters": [
+          {
+            "name": "inspection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Inspection Id"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Format de sortie (png, webp, jpeg)",
+              "default": "png",
+              "title": "Format"
+            },
+            "description": "Format de sortie (png, webp, jpeg)"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overlay annoté des boîtes et détections (PNG, WebP ou JPEG)",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "image/png": {},
+              "image/webp": {},
+              "image/jpeg": {}
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Inspection ou overlay introuvable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspections/{inspection_id}/export": {
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Exporter le rapport d'inspection au format JSON versionné",
+        "description": "Renvoie le JSON d'export normalisé conforme à export_schema_v1.json (AC-04).",
+        "operationId": "get_inspection_export_api_v1_inspections__inspection_id__export_get",
+        "parameters": [
+          {
+            "name": "inspection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Inspection Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rapport d'inspection normalisé conforme au schéma versionné export_schema_v1.json",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Inspection introuvable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur d'export ou fuite de sécurité détectée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/regions/{region_id}": {
+      "get": {
+        "tags": [
+          "Régions & Revue Humaine"
+        ],
+        "summary": "Récupérer les détails d'une région",
+        "description": "Récupère une région avec sa décision humaine courante.\nContrôle de visibilité : un opérateur n'a pas accès aux régions d'une inspection invisible (404).",
+        "operationId": "get_region_details_api_v1_regions__region_id__get",
+        "parameters": [
+          {
+            "name": "region_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Region Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegionDetailResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Région ou inspection introuvable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/regions/{region_id}/feedback": {
+      "post": {
+        "tags": [
+          "Régions & Revue Humaine"
+        ],
+        "summary": "Enregistrer une décision humaine sur une région",
+        "description": "Enregistre une décision de validation humaine (confirmed, rejected, uncertain).\n\nRègles contractuelles :\n- Seuls les opérateurs peuvent soumettre un feedback (FORBIDDEN pour tout autre rôle).\n- L'opérateur ne peut agir que sur ses propres inspections (INSPECTION_NOT_FOUND si invisible).\n- Validation stricte du motif de rejet (obligatoire si rejected, interdit si confirmed).",
+        "operationId": "submit_region_feedback_api_v1_regions__region_id__feedback_post",
+        "parameters": [
+          {
+            "name": "region_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Region Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Motif de rejet invalide ou manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle opérateur requis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Région ou inspection introuvable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/regions/{region_id}/thumbnail": {
+      "get": {
+        "tags": [
+          "Régions & Revue Humaine"
+        ],
+        "summary": "Télécharger la vignette recadrée de la région",
+        "description": "Découpe et renvoie la vignette de la région depuis l'image originale stockée.\n\nRenvoie 404 INSPECTION_NOT_FOUND si l'inspection n'appartient pas à l'opérateur (Exigence 4.d).",
+        "operationId": "get_region_thumbnail_api_v1_regions__region_id__thumbnail_get",
+        "parameters": [
+          {
+            "name": "region_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Region Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vignette de la région recadrée au format PNG",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "image/png": {}
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Région ou inspection introuvable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/regions/{region_id}/history": {
+      "get": {
+        "tags": [
+          "Régions & Revue Humaine"
+        ],
+        "summary": "Historique complet des revues pour une région",
+        "description": "Renvoie l'historique chronologique inverse de toutes les validations humaines sur cette région.",
+        "operationId": "get_region_feedback_history_api_v1_regions__region_id__history_get",
+        "parameters": [
+          {
+            "name": "region_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Region Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeedbackResponse"
+                  },
+                  "title": "Response Get Region Feedback History Api V1 Regions  Region Id  History Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Région ou inspection introuvable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/similarity/search": {
+      "post": {
+        "tags": [
+          "Similarité Visuelle"
+        ],
+        "summary": "Recherche de références visuelles similaires",
+        "description": "Recherche visuelle par plongement vectoriel ResNet-50 GAP 2048 + FAISS.",
+        "operationId": "search_similarity_api_v1_similarity_search_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_search_similarity_api_v1_similarity_search_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimilaritySearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Image corrompue, invalide ou vide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Moteur de similarité indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/similarity/ref/{ref_id}/thumbnail": {
+      "get": {
+        "tags": [
+          "Similarité Visuelle"
+        ],
+        "summary": "Télécharger la vignette d'une référence visuelle",
+        "description": "Sert la vignette d'une référence textile ou texture.\n\nExige rigoureusement l'en-tête Authorization: Bearer (Exigence A).\nProtégé contre toute tentative de path traversal.",
+        "operationId": "get_similarity_thumbnail_api_v1_similarity_ref__ref_id__thumbnail_get",
+        "parameters": [
+          {
+            "name": "ref_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vignette de référence visuelle (PNG ou JPEG)",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "image/png": {},
+              "image/jpeg": {}
+            }
+          },
+          "400": {
+            "description": "Tentative de traversée de chemin ou référence non autorisée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Référence visuelle introuvable sur disque",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Moteur de similarité indisponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/models": {
+      "get": {
+        "tags": [
+          "Modèles & Rapports"
+        ],
+        "summary": "Consulter les métadonnées et versions des modèles d'inspection",
+        "description": "Renvoie les informations publiques, paramètres et empreintes des modèles chargés.",
+        "operationId": "list_models_info_api_v1_models_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelsListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/domain-bias": {
+      "get": {
+        "tags": [
+          "Modèles & Rapports"
+        ],
+        "summary": "Consulter le rapport d'évaluation du biais de domaine",
+        "description": "Renvoie le contenu du rapport contractuel d'évaluation du biais de domaine.",
+        "operationId": "get_domain_bias_report_api_v1_reports_domain_bias_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainBiasReportResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentification requise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Rapport introuvable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur lors du chargement du rapport",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/settings/rejection-reasons": {
+      "get": {
+        "tags": [
+          "Paramètres & Configuration"
+        ],
+        "summary": "Obtenir la liste standardisée des motifs de rejet de détection",
+        "description": "Renvoie la liste des motifs de rejet configurés dans settings.REJECTION_REASONS.\n\nAccessible à tous les utilisateurs authentifiés pour alimenter dynamiquement le frontend.",
+        "operationId": "get_rejection_reasons_api_v1_settings_rejection_reasons_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Response Get Rejection Reasons Api V1 Settings Rejection Reasons Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stats/summary": {
+      "get": {
+        "tags": [
+          "Statistiques Synthétiques"
+        ],
+        "summary": "Synthèse statistique du tableau de bord (décomptes uniquement)",
+        "description": "Calcule et renvoie les agrégats de base de données :\n- Décomptes d'inspections par statut (total, pending, running, done, error)\n- Décomptes de régions détectées par moteur (total, yolo, patchcore)\n- Décomptes de décisions humaines courantes (total, confirmed, rejected, uncertain, unreviewed)\n- Liste des 5 dernières inspections",
+        "operationId": "get_summary_statistics_api_v1_stats_summary_get",
+        "parameters": [
+          {
+            "name": "include_demo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Inclure ou exclure les inspections de démonstration",
+              "default": true,
+              "title": "Include Demo"
+            },
+            "description": "Inclure ou exclure les inspections de démonstration"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SummaryStatsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit": {
+      "get": {
+        "tags": [
+          "Journalisation & Audit"
+        ],
+        "summary": "Consulter le journal d'audit immuable",
+        "description": "Renvoie la liste paginée des traces d'audit et consigne l'accès.",
+        "operationId": "list_audit_logs_api_v1_audit_get",
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Action"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Username"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date From"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date To"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditLogListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/feedback/export": {
+      "get": {
+        "tags": [
+          "Export & Annotations"
+        ],
+        "summary": "Exporter les décisions humaines pour réentraînement ou analyse ML",
+        "description": "Exporte l'historique des revues humaines associées à leurs boîtes englobantes et classifications.\n\nPermet aux ingénieurs ML de constituer des jeux d'évaluation ou de réentraînement futurs.",
+        "operationId": "export_feedback_dataset_api_v1_feedback_export_get",
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 5000,
+              "minimum": 1,
+              "default": 1000,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeedbackExportItem"
+                  },
+                  "title": "Response Export Feedback Dataset Api V1 Feedback Export Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActionStatusResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Statut de l'opération",
+            "default": "ok"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Message informatif"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "ActionStatusResponse"
+      },
+      "AuditLogItem": {
+        "properties": {
+          "_id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Identifiant unique de l'événement"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action",
+            "description": "Type d'action auditée"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id",
+            "description": "Identifiant de l'utilisateur ayant réalisé l'action"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username",
+            "description": "Nom de l'utilisateur"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At",
+            "description": "Horodatage UTC"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details",
+            "description": "Métadonnées assainies de l'événement"
+          }
+        },
+        "type": "object",
+        "required": [
+          "_id",
+          "action",
+          "at"
+        ],
+        "title": "AuditLogItem"
+      },
+      "AuditLogListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AuditLogItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "skip": {
+            "type": "integer",
+            "title": "Skip"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "skip",
+          "limit"
+        ],
+        "title": "AuditLogListResponse"
+      },
+      "Body_create_inspection_api_v1_inspections_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "Fichier image à inspecter"
+          },
+          "engines": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engines",
+            "description": "Liste des moteurs séparés par virgule (ex: 'yolo,patchcore,similarity')"
+          },
+          "scale_mode": {
+            "type": "string",
+            "enum": [
+              "native",
+              "normalized"
+            ],
+            "title": "Scale Mode",
+            "description": "Mode d'échelle d'inférence : 'native' (défaut) ou 'normalized' (agrandissement bicubique jusqu'à INFERENCE_LONG_SIDE)",
+            "default": "native"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_create_inspection_api_v1_inspections_post"
+      },
+      "Body_search_similarity_api_v1_similarity_search_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "Vignette ou région à comparer"
+          },
+          "index_name": {
+            "type": "string",
+            "enum": [
+              "weaveguard",
+              "dtd",
+              "all"
+            ],
+            "title": "Index Name",
+            "description": "Index cible",
+            "default": "all"
+          },
+          "k": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "K",
+            "description": "Nombre de voisins les plus proches",
+            "default": 5
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_search_similarity_api_v1_similarity_search_post"
+      },
+      "Corroboration": {
+        "properties": {
+          "detected": {
+            "type": "boolean",
+            "title": "Detected",
+            "description": "Vrai si corroboré par le moteur PatchCore"
+          },
+          "overlap_ratio_box": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Overlap Ratio Box",
+            "description": "Ratio de recouvrement de la boîte YOLO"
+          },
+          "overlap_ratio_region": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Overlap Ratio Region",
+            "description": "Ratio de recouvrement de l'anomalie PatchCore"
+          },
+          "score_patchcore": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Patchcore",
+            "description": "Score de distance PatchCore maximal dans l'intersection"
+          },
+          "tau_patchcore": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tau Patchcore",
+            "description": "Seuil d'anomalie PatchCore"
+          }
+        },
+        "type": "object",
+        "required": [
+          "detected"
+        ],
+        "title": "Corroboration"
+      },
+      "DomainBiasReportResponse": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "generated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generated At"
+          },
+          "metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metrics"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "DomainBiasReportResponse"
+      },
+      "DomainCheck": {
+        "properties": {
+          "max_similarity": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Similarity",
+            "description": "Similarité cosinus maximale observée avec l'index WeaveGuard"
+          },
+          "reference_min": {
+            "type": "number",
+            "title": "Reference Min",
+            "description": "Minimum observé sur validation+test dans le rapport de biais de domaine"
+          },
+          "reference_source": {
+            "type": "string",
+            "title": "Reference Source",
+            "description": "Fichier source du seuil de référence",
+            "default": "models/domain_bias_report_v1.json"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "in_range",
+              "below_range",
+              "unavailable"
+            ],
+            "title": "Status",
+            "description": "Statut de représentativité : in_range, below_range, unavailable"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reference_min",
+          "status"
+        ],
+        "title": "DomainCheck"
+      },
+      "EngineProgress": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "ok",
+              "error",
+              "skipped"
+            ],
+            "title": "Status",
+            "description": "État d'avancement du moteur"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version",
+            "description": "Version ou hash de l'artefact"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Message d'erreur éventuel en cas d'échec du moteur"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms",
+            "description": "Détail des temps de traitement (preprocess, model, postprocess, total)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "EngineProgress"
+      },
+      "ErrorBody": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "correlation_id": {
+            "type": "string",
+            "title": "Correlation Id"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "correlation_id"
+        ],
+        "title": "ErrorBody"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse"
+      },
+      "FeedbackCreateRequest": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "rejected",
+              "uncertain"
+            ],
+            "title": "Decision",
+            "description": "Décision de revue humaine (confirmed, rejected, uncertain)"
+          },
+          "rejection_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejection Reason",
+            "description": "Motif de rejet standardisé parmi la liste configurable"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment",
+            "description": "Commentaire optionnel texte brut (max 500 car.)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "FeedbackCreateRequest"
+      },
+      "FeedbackExportItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "region_id": {
+            "type": "string",
+            "title": "Region Id"
+          },
+          "inspection_id": {
+            "type": "string",
+            "title": "Inspection Id"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "rejected",
+              "uncertain"
+            ],
+            "title": "Decision"
+          },
+          "rejection_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejection Reason"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "bbox": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Bbox"
+          },
+          "classification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classification"
+          },
+          "reviewed_by": {
+            "type": "string",
+            "title": "Reviewed By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "quality_checked": {
+            "type": "boolean",
+            "title": "Quality Checked",
+            "description": "Contrôle qualité pour ré-annotation future",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "region_id",
+          "inspection_id",
+          "decision",
+          "bbox",
+          "reviewed_by",
+          "created_at"
+        ],
+        "title": "FeedbackExportItem"
+      },
+      "FeedbackResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Identifiant unique UUID de l'entrée de feedback"
+          },
+          "region_id": {
+            "type": "string",
+            "title": "Region Id",
+            "description": "Identifiant de la région évaluée"
+          },
+          "inspection_id": {
+            "type": "string",
+            "title": "Inspection Id",
+            "description": "Identifiant de l'inspection associée"
+          },
+          "seq": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seq",
+            "description": "Numéro de séquence croissant pour garantie d'ordre déterministe"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "rejected",
+              "uncertain"
+            ],
+            "title": "Decision",
+            "description": "Décision humaine enregistrée"
+          },
+          "rejection_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejection Reason",
+            "description": "Motif de rejet le cas échéant"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment",
+            "description": "Commentaire textuel brut"
+          },
+          "reviewed_by": {
+            "type": "string",
+            "title": "Reviewed By",
+            "description": "Identifiant de l'opérateur ayant validé la région"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Horodatage ISO 8601 de la décision"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "region_id",
+          "inspection_id",
+          "decision",
+          "reviewed_by",
+          "created_at"
+        ],
+        "title": "FeedbackResponse"
+      },
+      "GPUHealthInfo": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "device_name": {
+            "type": "string",
+            "title": "Device Name",
+            "default": "N/A"
+          },
+          "total_memory_mb": {
+            "type": "number",
+            "title": "Total Memory Mb",
+            "default": 0.0
+          },
+          "allocated_memory_mb": {
+            "type": "number",
+            "title": "Allocated Memory Mb",
+            "default": 0.0
+          },
+          "sm_61_supported": {
+            "type": "boolean",
+            "title": "Sm 61 Supported",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "available"
+        ],
+        "title": "GPUHealthInfo"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "database": {
+            "type": "string",
+            "title": "Database"
+          },
+          "device_active": {
+            "type": "string",
+            "title": "Device Active"
+          },
+          "gpu": {
+            "$ref": "#/components/schemas/GPUHealthInfo"
+          },
+          "engines": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Engines"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "database",
+          "device_active",
+          "gpu",
+          "engines",
+          "timestamp"
+        ],
+        "title": "HealthResponse"
+      },
+      "HeatmapMeta": {
+        "properties": {
+          "scale": {
+            "type": "string",
+            "title": "Scale",
+            "description": "Échelle de normalisation de la carte d'anomalies",
+            "default": "raw"
+          },
+          "min": {
+            "type": "number",
+            "title": "Min",
+            "description": "Valeur minimale du score PatchCore"
+          },
+          "max": {
+            "type": "number",
+            "title": "Max",
+            "description": "Valeur maximale du score PatchCore"
+          },
+          "tau": {
+            "type": "number",
+            "title": "Tau",
+            "description": "Seuil d'anomalie de décision PatchCore"
+          },
+          "vmax": {
+            "type": "number",
+            "title": "Vmax",
+            "description": "Valeur maximale d'écrêtage pour la visualisation (vmax -> 255)"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width",
+            "description": "Largeur de la carte de chaleur"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height",
+            "description": "Hauteur de la carte de chaleur"
+          }
+        },
+        "type": "object",
+        "required": [
+          "min",
+          "max",
+          "tau",
+          "vmax",
+          "width",
+          "height"
+        ],
+        "title": "HeatmapMeta"
+      },
+      "ImageMeta": {
+        "properties": {
+          "filename": {
+            "type": "string",
+            "title": "Filename",
+            "description": "Nom de fichier d'origine de l'image"
+          },
+          "format": {
+            "type": "string",
+            "title": "Format",
+            "description": "Format d'encodage (JPEG, PNG)"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width",
+            "description": "Largeur originale de l'image"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height",
+            "description": "Hauteur originale de l'image"
+          },
+          "stored_width": {
+            "type": "integer",
+            "title": "Stored Width",
+            "description": "Largeur après redressement EXIF"
+          },
+          "stored_height": {
+            "type": "integer",
+            "title": "Stored Height",
+            "description": "Hauteur après redressement EXIF"
+          },
+          "inference_width": {
+            "type": "integer",
+            "title": "Inference Width",
+            "description": "Largeur redimensionnée passée aux modèles"
+          },
+          "inference_height": {
+            "type": "integer",
+            "title": "Inference Height",
+            "description": "Hauteur redimensionnée passée aux modèles"
+          },
+          "resize_factor": {
+            "type": "number",
+            "title": "Resize Factor",
+            "description": "Facteur d'échelle appliqué (<= 1.0 en réduction, > 1.0 en agrandissement)"
+          },
+          "scale_mode": {
+            "type": "string",
+            "enum": [
+              "native",
+              "normalized"
+            ],
+            "title": "Scale Mode",
+            "description": "Mode d'échelle utilisé ('native' ou 'normalized')",
+            "default": "native"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings",
+            "description": "Avertissements éventuels sur le format ou l'échelle"
+          }
+        },
+        "type": "object",
+        "required": [
+          "filename",
+          "format",
+          "width",
+          "height",
+          "stored_width",
+          "stored_height",
+          "inference_width",
+          "inference_height",
+          "resize_factor"
+        ],
+        "title": "ImageMeta"
+      },
+      "InspectionCreateResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Identifiant unique de l'inspection créée"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "done",
+              "error"
+            ],
+            "title": "Status",
+            "description": "Statut initial dans la file d'attente",
+            "default": "pending"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Date et heure de soumission"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "created_at"
+        ],
+        "title": "InspectionCreateResponse"
+      },
+      "InspectionListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/InspectionResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "skip": {
+            "type": "integer",
+            "title": "Skip"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "skip",
+          "limit"
+        ],
+        "title": "InspectionListResponse"
+      },
+      "InspectionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Identifiant unique de l'inspection"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "done",
+              "error"
+            ],
+            "title": "Status",
+            "description": "Statut global du traitement"
+          },
+          "partial": {
+            "type": "boolean",
+            "title": "Partial",
+            "description": "Vrai si au moins un moteur a échoué mais d'autres ont produit un résultat",
+            "default": false
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By",
+            "description": "Nom d'utilisateur de l'opérateur créateur"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Date de soumission"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At",
+            "description": "Date d'achèvement"
+          },
+          "image_meta": {
+            "$ref": "#/components/schemas/ImageMeta",
+            "description": "Métadonnées dimensionnelles et repère"
+          },
+          "engines": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/EngineProgress"
+            },
+            "type": "object",
+            "title": "Engines",
+            "description": "Progression et statut détaillé de chaque moteur"
+          },
+          "regions_count": {
+            "type": "integer",
+            "title": "Regions Count",
+            "description": "Nombre total de régions candidates détectées",
+            "default": 0
+          },
+          "heatmap_meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HeatmapMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Métadonnées de la carte de chaleur si générée"
+          },
+          "domain_check": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DomainCheck"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Évaluation de représentativité dans le domaine d'apprentissage"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings",
+            "description": "Avertissements généraux sur l'inspection"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message",
+            "description": "Message global d'erreur en cas d'échec total"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo",
+            "description": "Vrai s'il s'agit d'une inspection de démonstration",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "created_by",
+          "created_at",
+          "image_meta",
+          "engines"
+        ],
+        "title": "InspectionResponse"
+      },
+      "InspectionStats": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "default": 0
+          },
+          "pending": {
+            "type": "integer",
+            "title": "Pending",
+            "default": 0
+          },
+          "running": {
+            "type": "integer",
+            "title": "Running",
+            "default": 0
+          },
+          "done": {
+            "type": "integer",
+            "title": "Done",
+            "default": 0
+          },
+          "error": {
+            "type": "integer",
+            "title": "Error",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "InspectionStats"
+      },
+      "ModelItemDetail": {
+        "properties": {
+          "engine": {
+            "type": "string",
+            "title": "Engine"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Parameters"
+          },
+          "thresholds": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Thresholds"
+          },
+          "labels": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Labels"
+          }
+        },
+        "type": "object",
+        "required": [
+          "engine",
+          "version",
+          "role"
+        ],
+        "title": "ModelItemDetail"
+      },
+      "ModelsListResponse": {
+        "properties": {
+          "models": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ModelItemDetail"
+            },
+            "type": "object",
+            "title": "Models"
+          },
+          "integrity": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Integrity"
+          },
+          "device": {
+            "type": "string",
+            "title": "Device"
+          }
+        },
+        "type": "object",
+        "required": [
+          "models",
+          "integrity",
+          "device"
+        ],
+        "title": "ModelsListResponse"
+      },
+      "RegionDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Identifiant unique UUID de la région"
+          },
+          "display_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Id",
+            "description": "Identifiant court d'affichage : Y1, Y2... pour YOLO, P1, P2... pour PatchCore"
+          },
+          "inspection_id": {
+            "type": "string",
+            "title": "Inspection Id",
+            "description": "Identifiant de l'inspection associée"
+          },
+          "engine": {
+            "type": "string",
+            "enum": [
+              "yolo",
+              "patchcore"
+            ],
+            "title": "Engine",
+            "description": "Moteur source ayant produit la région"
+          },
+          "bbox": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Bbox",
+            "description": "Coordonnées [x, y, largeur, hauteur] en repère natif"
+          },
+          "area": {
+            "type": "number",
+            "title": "Area",
+            "description": "Surface de la région en pixels carrés"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Libellé textuel exact et documenté"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score",
+            "description": "Confiance modèle (YOLO) ou score de distance (PatchCore)"
+          },
+          "classification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classification",
+            "description": "Nom de la classe (YOLO uniquement, None pour PatchCore)"
+          },
+          "tau": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tau",
+            "description": "Seuil de décision PatchCore"
+          },
+          "corroboration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Corroboration"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Informations de corroboration croisée"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At",
+            "description": "Horodatage de création de la région"
+          },
+          "latest_decision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Decision",
+            "description": "Dernière décision humaine validée (Confirmé, Rejeté, Incertain)"
+          },
+          "latest_feedback": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FeedbackResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "inspection_id",
+          "engine",
+          "bbox",
+          "area",
+          "label"
+        ],
+        "title": "RegionDetailResponse"
+      },
+      "RegionListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RegionResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "RegionListResponse"
+      },
+      "RegionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Identifiant unique UUID de la région"
+          },
+          "display_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Id",
+            "description": "Identifiant court d'affichage : Y1, Y2... pour YOLO, P1, P2... pour PatchCore"
+          },
+          "inspection_id": {
+            "type": "string",
+            "title": "Inspection Id",
+            "description": "Identifiant de l'inspection associée"
+          },
+          "engine": {
+            "type": "string",
+            "enum": [
+              "yolo",
+              "patchcore"
+            ],
+            "title": "Engine",
+            "description": "Moteur source ayant produit la région"
+          },
+          "bbox": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Bbox",
+            "description": "Coordonnées [x, y, largeur, hauteur] en repère natif"
+          },
+          "area": {
+            "type": "number",
+            "title": "Area",
+            "description": "Surface de la région en pixels carrés"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Libellé textuel exact et documenté"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score",
+            "description": "Confiance modèle (YOLO) ou score de distance (PatchCore)"
+          },
+          "classification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classification",
+            "description": "Nom de la classe (YOLO uniquement, None pour PatchCore)"
+          },
+          "tau": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tau",
+            "description": "Seuil de décision PatchCore"
+          },
+          "corroboration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Corroboration"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Informations de corroboration croisée"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At",
+            "description": "Horodatage de création de la région"
+          },
+          "latest_decision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Decision",
+            "description": "Dernière décision humaine validée (Confirmé, Rejeté, Incertain)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "inspection_id",
+          "engine",
+          "bbox",
+          "area",
+          "label"
+        ],
+        "title": "RegionResponse"
+      },
+      "RegionStats": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "default": 0
+          },
+          "yolo": {
+            "type": "integer",
+            "title": "Yolo",
+            "default": 0
+          },
+          "patchcore": {
+            "type": "integer",
+            "title": "Patchcore",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "RegionStats"
+      },
+      "ReviewStats": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "default": 0
+          },
+          "confirmed": {
+            "type": "integer",
+            "title": "Confirmed",
+            "default": 0
+          },
+          "rejected": {
+            "type": "integer",
+            "title": "Rejected",
+            "default": 0
+          },
+          "uncertain": {
+            "type": "integer",
+            "title": "Uncertain",
+            "default": 0
+          },
+          "unreviewed": {
+            "type": "integer",
+            "title": "Unreviewed",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "ReviewStats"
+      },
+      "SimilarityIndexResult": {
+        "properties": {
+          "engine": {
+            "type": "string",
+            "title": "Engine",
+            "default": "similarity"
+          },
+          "extractor": {
+            "type": "string",
+            "title": "Extractor"
+          },
+          "index": {
+            "type": "string",
+            "title": "Index"
+          },
+          "metric": {
+            "type": "string",
+            "title": "Metric",
+            "default": "cosine_similarity"
+          },
+          "higher_is_better": {
+            "type": "boolean",
+            "title": "Higher Is Better",
+            "default": true
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "latency_ms": {
+            "$ref": "#/components/schemas/SimilarityLatency"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/SimilarityItem"
+            },
+            "type": "array",
+            "title": "Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "extractor",
+          "index",
+          "label",
+          "note",
+          "latency_ms",
+          "results"
+        ],
+        "title": "SimilarityIndexResult"
+      },
+      "SimilarityItem": {
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "title": "Rank",
+            "description": "Rang du voisin le plus proche (1-indexed)"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score",
+            "description": "Similarité cosinus (comprise entre -1 et 1, typiquement > 0)"
+          },
+          "ref_id": {
+            "type": "string",
+            "title": "Ref Id",
+            "description": "Identifiant unique de la référence"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "Source de l'index (weaveguard, dtd)"
+          },
+          "classes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classes",
+            "description": "Classes textiles éventuelles"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category",
+            "description": "Catégorie DTD éventuelle"
+          },
+          "split": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Split",
+            "description": "Sous-ensemble d'origine (train, val)"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "rank",
+          "score",
+          "ref_id"
+        ],
+        "title": "SimilarityItem"
+      },
+      "SimilarityLatency": {
+        "properties": {
+          "preprocess": {
+            "type": "number",
+            "title": "Preprocess"
+          },
+          "model": {
+            "type": "number",
+            "title": "Model"
+          },
+          "search": {
+            "type": "number",
+            "title": "Search"
+          },
+          "total": {
+            "type": "number",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "preprocess",
+          "model",
+          "search",
+          "total"
+        ],
+        "title": "SimilarityLatency"
+      },
+      "SimilaritySearchResponse": {
+        "properties": {
+          "weaveguard": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SimilarityIndexResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dtd": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SimilarityIndexResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "SimilaritySearchResponse"
+      },
+      "SummaryStatsResponse": {
+        "properties": {
+          "inspections": {
+            "$ref": "#/components/schemas/InspectionStats"
+          },
+          "regions": {
+            "$ref": "#/components/schemas/RegionStats"
+          },
+          "reviews": {
+            "$ref": "#/components/schemas/ReviewStats"
+          },
+          "latest_inspections": {
+            "items": {
+              "$ref": "#/components/schemas/InspectionResponse"
+            },
+            "type": "array",
+            "title": "Latest Inspections"
+          },
+          "include_demo": {
+            "type": "boolean",
+            "title": "Include Demo",
+            "description": "Indique si les données de démonstration sont incluses"
+          }
+        },
+        "type": "object",
+        "required": [
+          "inspections",
+          "regions",
+          "reviews",
+          "latest_inspections",
+          "include_demo"
+        ],
+        "title": "SummaryStatsResponse"
+      },
+      "UserCreateRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 3,
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "title": "Password"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole",
+            "default": "operator"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "UserCreateRequest"
+      },
+      "UserLoginRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 2,
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "UserLoginRequest"
+      },
+      "UserLoginResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "user"
+        ],
+        "title": "UserLoginResponse"
+      },
+      "UserResetPasswordRequest": {
+        "properties": {
+          "new_password": {
+            "type": "string",
+            "minLength": 8,
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "new_password"
+        ],
+        "title": "UserResetPasswordRequest"
+      },
+      "UserResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "last_login": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Login"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "role",
+          "active",
+          "created_at"
+        ],
+        "title": "UserResponse"
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "operator",
+          "supervisor",
+          "admin",
+          "ml_engineer",
+          "auditor"
+        ],
+        "title": "UserRole"
+      },
+      "UserUpdateRequest": {
+        "properties": {
+          "role": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active"
+          }
+        },
+        "type": "object",
+        "title": "UserUpdateRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

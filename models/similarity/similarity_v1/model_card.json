@@ -1,0 +1,133 @@
+{
+ "model_id": "similarity_v1",
+ "role": "Recherche de textiles similaires (similarité visuelle, pas une détection de défaut)",
+ "config": {
+  "extractor_id": "resnet50_imagenet1k_v1_gap2048_l2",
+  "backbone": "resnet50",
+  "weights": "ImageNet IMAGENET1K_V1",
+  "pooling": "moyenne globale layer4",
+  "dim": 2048,
+  "normalization": "L2",
+  "preprocess": "Resize(256) plus petit côté + CenterCrop(256) + ImageNet mean/std",
+  "index_type": "faiss.IndexFlatIP (recherche exacte)",
+  "metric": "cosine_similarity",
+  "higher_is_better": true,
+  "k_default": 5,
+  "allowed_fields": {
+   "dtd": [
+    "ref_id",
+    "source",
+    "category"
+   ],
+   "weaveguard": [
+    "ref_id",
+    "source",
+    "classes",
+    "split"
+   ]
+  }
+ },
+ "artifacts_sha256": {
+  "index_dtd.faiss": "fe4f897106fe32515e2befa47d71b0b9c023226bf791a0a49631d779d4c35f91",
+  "index_weaveguard.faiss": "5668eb26c2057a042debd190dce9aaed1eb4c92f2855aabf77f9b3b00284573d",
+  "metadata_dtd.json": "1c3373459f64a344751654e1997d5d5becae1a867fa37b3b47ce39e80a17663e",
+  "metadata_weaveguard.json": "ad26418ef2e343c3cb43397b51bd57d42c443ca443978c9372ed726dc09e7b4e",
+  "config.json": "0aee1a73c9b0c23c03cdcd3e666494d287c9b8fd467b3d10a0a251f39f89bd7e"
+ },
+ "galleries": {
+  "dtd": {
+   "n": 5640,
+   "note": "toutes les images DTD"
+  },
+  "weaveguard": {
+   "n": 936,
+   "dataset_version": "v2",
+   "dataset_hash": "426ef147ab51e951d7ac3dfeefe59a4959cc75f7fddc5bc4516d98d3165b13ae",
+   "note": "images train+val ; le test reste hors index"
+  }
+ },
+ "evaluation": {
+  "dtd": {
+   "split": "officiel 1 (galerie=train+val, requêtes=test)",
+   "n_gallery": 3760,
+   "n_queries": 1880,
+   "metrics": {
+    "P@1": 0.6644,
+    "P@5": 0.581,
+    "P@10": 0.534,
+    "mAP": 0.2923
+   },
+   "chance_P_at_1": 0.0213,
+   "hardest_categories": {
+    "blotchy": 0.35,
+    "pitted": 0.35,
+    "marbled": 0.4,
+    "stained": 0.425,
+    "crosshatched": 0.45,
+    "bumpy": 0.475,
+    "smeared": 0.475,
+    "grooved": 0.5
+   },
+   "top_confusions": [
+    [
+     "dotted",
+     "polka-dotted",
+     14
+    ],
+    [
+     "lined",
+     "banded",
+     11
+    ],
+    [
+     "banded",
+     "lined",
+     9
+    ],
+    [
+     "fibrous",
+     "matted",
+     9
+    ],
+    [
+     "polka-dotted",
+     "dotted",
+     9
+    ],
+    [
+     "grid",
+     "meshed",
+     8
+    ]
+   ]
+  },
+  "weaveguard_domain": {
+   "hit@1": 0.938,
+   "hit@5": 0.988,
+   "chance_hit@1": 0.126,
+   "n_gallery": 774,
+   "n_queries": 162
+  }
+ },
+ "latency_colab": {
+  "embedding_ms": 11.9,
+  "search_dtd_ms": 3.19,
+  "search_weaveguard_ms": 0.39,
+  "device": "Tesla T4"
+ },
+ "ui_label": "Textiles similaires",
+ "never": "ne pas présenter comme un défaut ni comme un pourcentage de confiance",
+ "limits": [
+  "DTD = 47 catégories génériques de textures, pas des tissus industriels",
+  "index évalué sur DTD split 1 (galerie train+val) ; l index exporté contient les 5640 images",
+  "la mesure du domaine WeaveGuard est un accord de classe entre voisins, pas une vérité de similarité",
+  "prétraitement à recadrage central : les bords des grandes images sont ignorés",
+  "latence à remesurer sur le matériel cible (GTX 1050)"
+ ],
+ "versions": {
+  "torch": "2.11.0+cu130",
+  "torchvision": "0.26.0+cu130",
+  "faiss": "1.15.1"
+ },
+ "created": "2026-11-02T00:59:20"
+}
